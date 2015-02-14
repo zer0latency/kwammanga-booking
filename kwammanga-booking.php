@@ -18,3 +18,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+/*
+Plugin Name: Kwammanga Booking
+Plugin URI: https://github.com/zer0latency/kwammanga-booking
+Description: Under active development.
+Author: Daniil Kolesnik aka zer0latency
+Version: 0.1
+Author URI: https://github.com/zer0latency
+*/
