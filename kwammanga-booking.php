@@ -22,7 +22,7 @@
 Plugin Name: Kwammanga Booking
 Plugin URI: https://github.com/zer0latency/kwammanga-booking
 Description: Under active development.
-Author: Daniil Kolesnik aka zer0latency
+Author: Daniil Kolesnik
 Version: 0.1
 Author URI: https://github.com/zer0latency
 */
@@ -30,3 +30,18 @@ Author URI: https://github.com/zer0latency
 register_activation_hook(dirname(__file__).'/hooks/activation.php', 'kwmmb_activate');
 
 register_deactivation_hook(dirname(__file__).'/hooks/deactivation.php', 'kwmmb_deactivate');
+
+function kwmmb_add_admin_menu() {
+    //add an item to the menu
+    add_menu_page (
+        'Бронирование',
+        'Бронирование',
+        'manage_options',
+        'kwmmb-settings',
+        plugin_dir_url( __FILE__ ).'admin/settings.html.php',
+        plugin_dir_url( __FILE__ ).'assets/images/icon.png',
+        '23.56'
+    );
+}
+
+add_action( 'admin_menu', 'kwmmb_add_admin_menu' );
