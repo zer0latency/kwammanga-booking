@@ -27,7 +27,6 @@ Version: 0.1
 Author URI: https://github.com/zer0latency
 */
 require dirname(__file__).'/includes/bootstrap.php';
-require kwmmb_asset('php', 'hooks/shortcodes');
 
 register_activation_hook(dirname(__file__).'/hooks/activation.php', 'kwmmb_activate');
 

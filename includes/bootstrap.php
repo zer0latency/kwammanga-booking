@@ -36,7 +36,7 @@ function kwmmb_asset($type, $name) {
             $path = plugin_dir_url( __FILE__ )."../assets/css/$name.css";
             break;
         case 'php':
-            $path = plugin_dir_url( __FILE__ )."../$name.php";
+            $path = dirname(__file__)."/../$name.php";
             break;
         default:
             $path = '';
@@ -45,3 +45,17 @@ function kwmmb_asset($type, $name) {
     
     return $path;
 }
+
+function kwmmb_render($template, $params = array()) {
+    ob_start();
+    extract($params);
+    include kwmmb_asset('php', $template);
+    $rendered_template = ob_get_contents();
+    ob_end_clean();
+    
+    return $rendered_template;
+}
+
+include kwmmb_asset('php', 'includes/db');
+require kwmmb_asset('php', 'hooks/shortcodes');
+require kwmmb_asset('php', 'admin/admin');

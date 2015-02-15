@@ -26,8 +26,8 @@ function kwmmb_add_admin_menu() {
         'Бронирование',
         'manage_options',
         'kwmmb-settings',
-        plugin_dir_url( __FILE__ ).'admin/settings.html.php',
-        plugin_dir_url( __FILE__ ).'assets/images/icon.png',
+        kwmmb_asset('php', 'admin/settings.html'),
+        kwmmb_asset('image', 'icon'),
         '23.56'
     );
 }

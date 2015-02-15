@@ -19,7 +19,8 @@
  */
 
 function kwmmb_booking_form_shortcode() {
-    return "[Form]";
+    $params = array('name' => 'Jonny');
+    return kwmmb_render('assets/views/user-form.html', $params);
 }
 
 function kwmmb_register_form_shortcode() {
