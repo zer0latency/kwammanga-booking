@@ -57,5 +57,5 @@ function kwmmb_render($template, $params = array()) {
 }
 
 include kwmmb_asset('php', 'includes/db');
-require kwmmb_asset('php', 'hooks/shortcodes');
-require kwmmb_asset('php', 'admin/admin');
+include kwmmb_asset('php', 'hooks/shortcodes');
+include kwmmb_asset('php', 'admin/admin');
