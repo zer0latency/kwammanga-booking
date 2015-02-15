@@ -38,6 +38,8 @@ function kwmmb_asset($type, $name) {
         case 'php':
             $path = dirname(__file__)."/../$name.php";
             break;
+        case 'sql':
+            $path = dirname(__file__)."/../db/$name.sql";
         default:
             $path = '';
             break;
@@ -46,6 +48,14 @@ function kwmmb_asset($type, $name) {
     return $path;
 }
 
+/**
+ * Render a template
+ * 
+ * @param string $template
+ * @param array $params
+ * 
+ * @return string
+ */
 function kwmmb_render($template, $params = array()) {
     ob_start();
     extract($params);
