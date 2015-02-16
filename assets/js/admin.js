@@ -11,7 +11,8 @@ if (!String.prototype.format) {
   };
 }
 
-//ymaps.ready(init);
+
+ymaps.ready(init);
 var myMap;
 var kwmmbItems;
 var currentItem = null;
@@ -27,14 +28,7 @@ var refresh_table = function (from_server) {
   adminTable.find('tr').not('.table-header').remove();
   jQuery.each(kwmmbItems, function (i, elem) {
     adminTable
-            .append('<tr data-id="{0}"><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td></tr>'.format(
-              elem.id,
-              elem.name,
-              elem.price,
-              elem.price_full,
-              elem.roominess,
-              'Actions'
-            ));
+            .append(render_template('kwmmb_admin_row', elem));
   });
   
 };
@@ -44,12 +38,30 @@ function init() {
             center: [44.808763, 37.370311],
             zoom: 9
   });
+  
+  refresh_map();
 }
 
+function refresh_map() {
+    jQuery.each(kwmmbItems, function (i, elem) {
+        myMap.geoObjects.add(new ymaps.Placemark([elem.latitude, elem.longitude], {
+                balloonContent: render_template('kwmmb_baloon', elem),
+                iconContent: elem.name
+            }, {
+                preset: "islands#greenStretchyIcon",
+            })
+        );
+    });
+}
+
+/**
+ * 
+ * @returns {undefined}
+ */
 jQuery(function () {
   var $ = jQuery;
   refresh_table(true);
-  refresh_table(false);
+  
   $('.kwmmb-item-submit').click(function (e) {
     e.preventDefault();
     
@@ -70,10 +82,19 @@ jQuery(function () {
       ajax_url,
       postString.join('&'),
       function (data) {
-        location.reload();
+        refresh_table(true);
       }
     );
 
   });
 });
 
+var render_template = function (template_id, params) {
+  var template_content = jQuery('#'+template_id).html();
+  jQuery.each(params, function (i, elem) {
+      var regex = new RegExp('{'+i+'}', 'gm');
+      template_content = template_content.replace(regex, params[i]);
+  });
+  
+  return template_content;
+};

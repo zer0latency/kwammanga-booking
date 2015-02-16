@@ -50,25 +50,21 @@
           <div class='kwmmb-admin-map' id='ya-map'></div>
         </div>
     </div>
-    <script>
-        kwmmbItems = {
-          <?php $i=1; foreach ($items as $item): ?>
-          <?php $i++; ?>
-          "<?= $item->id ?>": {
-            "id":          "<?= $item->id ?>",
-            "name":        "<?= $item->name ?>",
-            "description": "<?= $item->description ?>",
-            "price":       "<?= $item->price ?>",
-            "price_full":  "<?= $item->price_full ?>",
-            "roominess":   "<?= $item->roominess ?>",
-            "latitude":    "<?= $item->latitude ?>",
-            "longitude":   "<?= $item->longitude ?>",
-          } <?= $i<count($items) ? ',' : '' ?>
-          <?php endforeach; ?>
-        };
-    </script>
     <table class='kwmmb-admin-table'>
       <tr class='table-header'><th>Наименование</th><th>Цена</th><th>Цена за весь период</th><th>Вместимость</th><th>Действия</th></tr>
 
     </table>
 </div>
+
+<script type="template/html" id="kwmmb_baloon">
+    <h3>{name}</h3>
+    <p>{description}</p>
+    <ul>
+      <li>За сутки: <b>{price}</b> рублей</li>
+      <li>За сутки: <b>{price_full}</b> рублей</li>
+    </ul>
+</script>
+
+<script type="template/html" id="kwmmb_admin_row">
+    <tr><td>{name}</td><td>{price}</td><td>{price_full}</td><td>{roominess}</td><td>{Действия}</td></tr>
+</script>
