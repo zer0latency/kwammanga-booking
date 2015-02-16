@@ -65,7 +65,7 @@ function kwmmb_current_table_version ($db_name, $table_name) {
 
     $query_result = $wpdb->get_var( $wpdb->prepare($query, $db_name, $wpdb->prefix.$table_name) );
 
-    if ( $query_result === 0) {
+    if ( $query_result === '0') {
         return null;
     } else {
         return str_replace('Version: ', '', $query_result);
