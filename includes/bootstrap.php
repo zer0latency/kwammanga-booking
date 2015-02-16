@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2015 dkey
  *
  * This program is free software; you can redistribute it and/or
@@ -44,26 +44,33 @@ function kwmmb_asset($type, $name) {
             $path = '';
             break;
     }
-    
+
     return $path;
 }
 
 /**
  * Render a template
- * 
+ *
  * @param string $template
  * @param array $params
- * 
+ *
  * @return string
  */
 function kwmmb_render($template, $params = array()) {
+    kwmmb_log("Rendering $template");
     ob_start();
     extract($params);
     include kwmmb_asset('php', $template);
     $rendered_template = ob_get_contents();
     ob_end_clean();
-    
+
     return $rendered_template;
+}
+
+function kwmmb_log($message) {
+    if (getenv('KWMMB_DEBUG')) {
+        error_log($message, 4);
+    }
 }
 
 include kwmmb_asset('php', 'includes/db');

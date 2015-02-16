@@ -20,7 +20,7 @@
 
 define('KWMMB_BASES_TABLE_NAME', 'kwmmb-booking_items');
 define('KWMMB_BOOKINGS_TABLE_NAME', 'kwmmb-bookings');
-define('KWMMB_DB_VERSION', 0);
+define('KWMMB_DB_VERSION', 1);
 
 function kwmmb_install() {
     global $wpdb;
@@ -31,18 +31,18 @@ function kwmmb_install() {
     );
 
     foreach ($tables as $table) {
-        error_log("Requesting version for table $table", 4);
+        kwmmb_log("Requesting version for table $table");
         $table_version = kwmmb_current_table_version($wpdb->dbname, $table);
         if ($table_version === null) {
-            error_log("$table does not exists.", 4);
+            kwmmb_log("$table does not exists.");
             $from_version = 0;
         } else {
-            error_log("$table has version $table_version", 4);
+            kwmmb_log("$table has version $table_version");
             $from_version = $table_version + 1;
         }
 
         for ($i=$from_version; $i<KWMMB_DB_VERSION+1; $i++) {
-            error_log("Executing $i query for table $table", 4);
+            kwmmb_log("Executing $i query for table $table");
             $wpdb->query( kwmmb_get_sql($table, $i, array('prefix' => $wpdb->prefix)) );
         }
     }
@@ -63,13 +63,39 @@ function kwmmb_current_table_version ($db_name, $table_name) {
     WHERE table_schema=%s
         AND table_name=%s;";
 
-    $query_result = $wpdb->query( $wpdb->prepare($query, $db_name, $wpdb->prefix.$table_name) );
+    $query_result = $wpdb->get_var( $wpdb->prepare($query, $db_name, $wpdb->prefix.$table_name) );
 
     if ( $query_result === 0) {
         return null;
     } else {
         return str_replace('Version: ', '', $query_result);
     }
+}
+
+function kwmmb_items_get_all() {
+    global $wpdb;
+
+    return $wpdb->get_results("SELECT * FROM `".$wpdb->prefix.KWMMB_BASES_TABLE_NAME."`");
+}
+
+function kwmmb_items_set($id, $params) {
+    global $wpdb;
+
+    return $wpdb->update($wpdb->prefix.KWMMB_BASES_TABLE_NAME, $params, array('id' => $id));
+}
+
+function kwmmb_items_create($params) {
+    global $wpdb;
+    $accept_fields = array('name','description','price','price_full','roominess','latitude','longitude');
+    $accepted_params = array();
+
+    foreach ($params as $key => $value) {
+        if (in_array($key, $accept_fields)) {
+            $accepted_params[$wpdb->escape($key)] = $wpdb->escape($value);
+        }
+    }
+
+    return $wpdb->insert($wpdb->prefix.KWMMB_BASES_TABLE_NAME, $accepted_params);
 }
 
 kwmmb_install();

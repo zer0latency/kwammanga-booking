@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2015 dkey
  *
  * This program is free software; you can redistribute it and/or
@@ -34,4 +34,4 @@ register_deactivation_hook(dirname(__file__).'/hooks/deactivation.php', 'kwmmb_d
 
 add_action( 'admin_menu', 'kwmmb_add_admin_menu' );
 
-add_action('init', 'kwmmb_register_form_shortcode');
+add_action( 'init', 'kwmmb_register_form_shortcode' );

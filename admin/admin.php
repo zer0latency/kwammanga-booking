@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2015 dkey
  *
  * This program is free software; you can redistribute it and/or
@@ -26,8 +26,31 @@ function kwmmb_add_admin_menu() {
         'Бронирование',
         'manage_options',
         'kwmmb-settings',
-        kwmmb_asset('php', 'admin/settings.html'),
+        'kwmmb_get_admin_page',
         kwmmb_asset('image', 'icon'),
         '23.56'
     );
+}
+
+function kwmmb_get_admin_page() {
+    echo kwmmb_render(
+        'admin/settings.html',
+        array('items' => kwmmb_items_get_all())
+    );
+}
+
+// Ajax item_create action
+add_action( 'wp_ajax_kwmmb_item_create', 'kwmmb_ajax_item_create' );
+function kwmmb_ajax_item_create() {
+    check_ajax_referer( 'kwmmb_admin_nonce' );
+
+    wp_send_json( kwmmb_items_create($_POST) );
+    wp_die(); // All ajax handlers die when finished
+}
+
+// Ajax get_all_items action
+add_action( 'wp_ajax_kwmmb_items_get', 'kwmmb_ajax_items_get' );
+function kwmmb_ajax_items_get() {
+    wp_send_json( kwmmb_items_get_all() );
+    wp_die(); // All ajax handlers die when finished
 }
