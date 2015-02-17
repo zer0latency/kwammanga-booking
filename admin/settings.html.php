@@ -7,7 +7,7 @@
         <div class='col-50'>
           <form class='kwmmb-item-form' name='kwmmb-item-form'>
             <h3>Текущий элемент</h3>
-              <input type='hidden' name="_ajax_nonce" value='<?= wp_create_nonce('kwmmb_admin_nonce') ?>'>
+              <input id="kwmmb_ajax_nonce" type='hidden' name="_ajax_nonce" value='<?= wp_create_nonce('kwmmb_admin_nonce') ?>'>
               <div class='kwmmb-field'>
                 <label for="item_name">Название:</label>
                 <input type='text' name='item_name' id="item_name" placeholder="Палатка">
@@ -43,8 +43,8 @@
                 <input type='text' name='item_longitude' id="item_longitude" placeholder="37.370311">
                 <span class='kwmmb-field-value'></span>
               </div>
-              <button class='kwmmb-item-submit'>Сохранить</button>
           </form>
+          <button class='kwmmb-item-submit'>Сохранить</button>
         </div>
         <div class='col-50'>
           <div class='kwmmb-admin-map' id='ya-map'></div>
@@ -56,7 +56,7 @@
     </table>
 </div>
 
-<script type="template/html" id="kwmmb_baloon">
+<script type="text/html" id="kwmmb_baloon">
     <h3>{name}</h3>
     <p>{description}</p>
     <ul>
@@ -65,6 +65,21 @@
     </ul>
 </script>
 
-<script type="template/html" id="kwmmb_admin_row">
-    <tr><td>{name}</td><td>{price}</td><td>{price_full}</td><td>{roominess}</td><td>{Действия}</td></tr>
+<script type="text/html" id="kwmmb_admin_row">
+  <tr>
+    <td>{name}</td>
+    <td>{price}</td>
+    <td>{price_full}</td>
+    <td>{roominess}</td>
+    <td class="kwmmb-table-actions">
+      <a href="#edit/{id}">Изменить</a>
+      <a href="#remove/{id}">Удалить</a>
+    </td>
+  </tr>
+</script>
+
+<script type="text/html" id="kwmmb_loading">
+  <div class="kwmmb-loading-backdrop">
+    <img src="<?= kwmmb_asset('animation', 'loading') ?>" alt="Загрузка...">
+  </div>
 </script>

@@ -60,3 +60,19 @@ and open the template in the editor.
 .template-html {
     display: none;
 }
+
+.kwmmb-loading-backdrop {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+.kwmmb-loading-backdrop img {
+  display: block;
+  margin: 0 auto;
+  position: relative;
+  top: 40%;
+}

@@ -22,6 +22,11 @@ define('KWMMB_BASES_TABLE_NAME', 'kwmmb-booking_items');
 define('KWMMB_BOOKINGS_TABLE_NAME', 'kwmmb-bookings');
 define('KWMMB_DB_VERSION', 1);
 
+/**
+ * Create or renew database
+ *
+ * @global type $wpdb
+ */
 function kwmmb_install() {
     global $wpdb;
 
@@ -48,10 +53,26 @@ function kwmmb_install() {
     }
 }
 
+/**
+ * Get SQL Query from file
+ *
+ * @param type $name
+ * @param type $version
+ * @param type $params
+ * @return type
+ */
 function kwmmb_get_sql($name, $version, $params) {
     return kwmmb_render("db/{$name}_{$version}.sql", $params);
 }
 
+/**
+ * Get current table version
+ *
+ * @global type $wpdb
+ * @param type $db_name
+ * @param type $table_name
+ * @return type
+ */
 function kwmmb_current_table_version ($db_name, $table_name) {
     global $wpdb;
 
@@ -72,18 +93,60 @@ function kwmmb_current_table_version ($db_name, $table_name) {
     }
 }
 
+/**
+ * Get all booking items
+ *
+ * @global type $wpdb
+ * @return type
+ */
 function kwmmb_items_get_all() {
     global $wpdb;
 
     return $wpdb->get_results("SELECT * FROM `".$wpdb->prefix.KWMMB_BASES_TABLE_NAME."`");
 }
 
-function kwmmb_items_set($id, $params) {
+/**
+ * Update a single item
+ *
+ * @global type $wpdb
+ * @param type $id
+ * @param type $params
+ * @return type
+ */
+function kwmmb_item_set($id, $params) {
     global $wpdb;
+    $accept_fields = array('name','description','price','price_full','roominess','latitude','longitude');
+    $accepted_params = array();
 
-    return $wpdb->update($wpdb->prefix.KWMMB_BASES_TABLE_NAME, $params, array('id' => $id));
+    foreach ($params as $key => $value) {
+        if (in_array($key, $accept_fields)) {
+            $accepted_params[$wpdb->escape($key)] = $wpdb->escape($value);
+        }
+    }
+
+    return $wpdb->update($wpdb->prefix.KWMMB_BASES_TABLE_NAME, $accepted_params, array('id' => $id));
 }
 
+/**
+ * Remove item from database
+ *
+ * @global type $wpdb
+ * @param type $id
+ * @return type
+ */
+function kwmmb_item_remove($id) {
+    global $wpdb;
+    kwmmb_log('Removing item #'.$id);
+    return $wpdb->delete('`'.$wpdb->prefix.KWMMB_BASES_TABLE_NAME.'`', array('id' => $id));
+}
+
+/**
+ * Create new booking item in database
+ *
+ * @global type $wpdb
+ * @param type $params
+ * @return type
+ */
 function kwmmb_items_create($params) {
     global $wpdb;
     $accept_fields = array('name','description','price','price_full','roominess','latitude','longitude');

@@ -32,6 +32,9 @@ function kwmmb_asset($type, $name) {
         case 'image':
             $path = plugin_dir_url( __FILE__ )."../assets/images/$name.png";
             break;
+        case 'animation':
+            $path = plugin_dir_url( __FILE__ )."../assets/images/$name.gif";
+            break;
         case 'stylesheet':
             $path = plugin_dir_url( __FILE__ )."../assets/css/$name.css";
             break;
