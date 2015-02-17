@@ -16,7 +16,7 @@ var refresh_table = function (from_server) {
         kwmmbItems = data;
         kwmmb_loading(false);
         refresh_table(false);
-        refresh_map();
+        myMap && refresh_map();
       },
       error: function () {
         kwmmb_loading(false);
@@ -44,13 +44,13 @@ function init() {
 function refresh_map() {
   myMap.geoObjects.removeAll();
   jQuery.each(kwmmbItems, function (i, elem) {
-      elem.map_object = myMap.geoObjects.set(elem.id, new ymaps.Placemark([elem.latitude, elem.longitude], {
-              balloonContent: render_template('kwmmb_baloon', elem),
-              iconContent: elem.name
-          }, {
-              preset: "islands#greenStretchyIcon"
-          })
-      );
+    elem.map_object = new ymaps.Placemark([elem.latitude, elem.longitude], {
+            balloonContent: render_template('kwmmb_baloon', elem),
+            iconContent: elem.name
+        }, {
+            preset: "islands#greenStretchyIcon"
+        });
+    myMap.geoObjects.add(elem.map_object);
   });
 }
 
@@ -142,7 +142,8 @@ function kwmmb_item_edit(id) {
   jQuery.each(kwmmbItems, function (i, item) {
     if (item.id === id) {
       currentItem = item;
-      myMap.panTo(currentItem.map_object.geometry.position);
+      currentItem.map_object.balloon.autoPan();
+      currentItem.map_object.balloon.open();
       jQuery.each(item, function (j, field) {
         jQuery('#item_'+j).val(field);
       });
