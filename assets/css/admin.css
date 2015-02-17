@@ -15,7 +15,7 @@ and open the template in the editor.
   vertical-align: top;
 }
 
-.kwmmb-admin-map {
+.kwmmb-admin-map, #ya-map {
   width: 100%;
   min-height: 400px;
 }
@@ -34,7 +34,7 @@ and open the template in the editor.
   vertical-align: baseline;
 }
 
-.kwmmb-field input {
+.kwmmb-field input, .kwmmb-field select {
   display: inline-block;
   width: 60%;
 }
