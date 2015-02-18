@@ -39,8 +39,8 @@
               </div>
               <hr>
               <p><b>Места:</b></p>
+              <div id="ya-map"></div>
               <div class="kwmmb-field">
-                <div id="ya-map"></div>
                 <label for="place">Выбранное место:</label>
                 <input type="text" readonly="readonly" name="place" id="place" placeholder="Выберите место на карте">
               </div>

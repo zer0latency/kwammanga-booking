@@ -20,6 +20,10 @@ and open the template in the editor.
   min-height: 400px;
 }
 
+.kwmmb-field {
+    margin-top: 10px;
+}
+
 .kwmmb-field-value {
   display: none;
 }
