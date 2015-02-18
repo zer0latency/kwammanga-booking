@@ -11,7 +11,7 @@
               <input id="kwmmb_ajax_nonce" type='hidden' name="_ajax_nonce" value='<?= wp_create_nonce('kwmmb_user_nonce') ?>'>
               <div class='kwmmb-field'>
                 <label for="name">Представьтесь:</label>
-                <input type='text' name='name' id="name" placeholder="Иванов И.И.">
+                <input type='text' name='name' id="name" placeholder="Иванов Иван Иванович">
               </div>
               <hr>
               <p><b>Нас:</b></p>
@@ -34,16 +34,30 @@
               <p><b>Период принятия участия:</b></p>
               <div class='kwmmb-field'>
                 <label for="date_range">Когда:</label>
-                <input class="daterange-picker" type='text' name='date_range' id="date_range" placeholder="Щелкните здесь...">
+                <input class="daterange-picker" type='text' name='date_range' id="date_range" placeholder="Щелкните здесь..." readonly="readonly">
                 <span class='kwmmb-field-value'></span>
               </div>
               <hr>
               <p><b>Места:</b></p>
               <div class="kwmmb-field">
                 <div id="ya-map"></div>
+                <label for="place">Выбранное место:</label>
+                <input type="text" readonly="readonly" name="place" id="place" placeholder="Выберите место на карте">
+              </div>
+              <p>
+                <b style="display: block">Организаторские сборы: <span style="color: #303030; float: right;" id="cost-of-org"></span></b>
+                <b style="display: block">Стоимость проживания:  <span style="color: #303030; float: right;" id="cost-of-living"></span></b>
+                <b style="display: block">Стоимость питания:     <span style="color: #303030; float: right;" id="cost-of-food"></span></b>
+                <b style="display: block">Полная стоимость:      <span style="color: #303030; float: right;" id="cost-of-all"></span></b>
+              </p>
+              <hr>
+              <p><b>Контакты:</b></p>
+              <div class="kwmmb-field">
+                <label for="phone">Телефон:</label>
+                <input type="text" name="phone" id="phone" placeholder="79231231235">
               </div>
           </form>
-          <button class='kwmmb-item-submit'>Сохранить</button>
+          <button class='kwmmb-item-submit'>Заказать</button>
         </div>
         <div class='col-50'>
           <div class='kwmmb-admin-map' id='ya-map'></div>
@@ -52,7 +66,7 @@
 </div>
 
 <script type="text/html" id="kwmmb_baloon">
-    <h3>{name}</h3>
+    <p><b>{name}</b></p>
     <p>{description}</p>
     <ul>
       <li>За сутки: <b>{price}</b> рублей</li>
