@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2015 dkey
  *
  * This program is free software; you can redistribute it and/or
@@ -19,7 +19,15 @@
  */
 
 function kwmmb_booking_form_shortcode() {
-    $params = array('name' => 'Jonny');
+    $params = array(
+        'place_types' => array(
+            'tent'     => 'Палатка',
+            'standard' => 'Стандарт',
+            'comfort'  => 'Комфорт',
+            'eco-lux'  => 'Эко-люкс',
+        )
+    );
+
     return kwmmb_render('assets/views/user-form.html', $params);
 }
 

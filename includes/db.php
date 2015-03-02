@@ -20,7 +20,7 @@
 
 define('KWMMB_BASES_TABLE_NAME', 'kwmmb-booking_items');
 define('KWMMB_BOOKINGS_TABLE_NAME', 'kwmmb-bookings');
-define('KWMMB_DB_VERSION', 1);
+define('KWMMB_DB_VERSION', 0);
 
 /**
  * Create or renew database

@@ -10,8 +10,20 @@
           <form class='kwmmb-item-form' name='kwmmb-item-form'>
               <input id="kwmmb_ajax_nonce" type='hidden' name="_ajax_nonce" value='<?= wp_create_nonce('kwmmb_user_nonce') ?>'>
               <div class='kwmmb-field'>
-                <label for="name">Представьтесь:</label>
-                <input type='text' name='name' id="name" placeholder="Иванов Иван Иванович">
+                <label for="place_type">Тип размещения:</label>
+                <table>
+                  <tr>
+                  <?php foreach ($place_types as $name => $label): ?>
+                    <td><a href="#<?= $name ?>"><?= $label ?></a></td>
+                  <?php endforeach; ?>
+                  </tr>
+                </table>
+              </div>
+              <p><b>Доступные базы:</b></p>
+              <div id="ya-map"></div>
+              <div class="kwmmb-field">
+                <label for="place">Выбранное место:</label>
+                <input type="text" readonly="readonly" name="place" id="place" placeholder="Выберите место на карте">
               </div>
               <hr>
               <p><b>Нас:</b></p>
@@ -37,13 +49,6 @@
                 <input class="daterange-picker" type='text' name='date_range' id="date_range" placeholder="Щелкните здесь..." readonly="readonly">
                 <span class='kwmmb-field-value'></span>
               </div>
-              <hr>
-              <p><b>Места:</b></p>
-              <div id="ya-map"></div>
-              <div class="kwmmb-field">
-                <label for="place">Выбранное место:</label>
-                <input type="text" readonly="readonly" name="place" id="place" placeholder="Выберите место на карте">
-              </div>
               <p>
                 <b style="display: block">Организаторские сборы: <span style="color: #303030; float: right;" id="cost-of-org"></span></b>
                 <b style="display: block">Стоимость проживания:  <span style="color: #303030; float: right;" id="cost-of-living"></span></b>
@@ -53,8 +58,16 @@
               <hr>
               <p><b>Контакты:</b></p>
               <div class="kwmmb-field">
+                <label for="name">Ваше имя:</label>
+                <input type="text" name="name" id="name" placeholder="Иванов Иван Иванович" required="required">
+              </div>
+              <div class="kwmmb-field">
+                <label for="email">Email-адрес:</label>
+                <input type="text" name="email" id="email" placeholder="myemail@example.com" required="required">
+              </div>
+              <div class="kwmmb-field">
                 <label for="phone">Телефон:</label>
-                <input type="text" name="phone" id="phone" placeholder="79231231235">
+                <input type="text" name="phone" id="phone" placeholder="79231231235" required="required">
               </div>
           </form>
           <button class='kwmmb-item-submit'>Заказать</button>
