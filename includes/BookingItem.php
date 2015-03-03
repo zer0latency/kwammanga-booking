@@ -202,6 +202,11 @@ class BookingItem
 
         return $wpdb->delete(self::get_table_name(), array('id' => $this->id));
     }
+
+    public function as_array()
+    {
+        return get_object_vars($this);
+    }
     //                           Public Methods
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------

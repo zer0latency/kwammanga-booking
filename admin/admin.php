@@ -55,7 +55,12 @@ add_action( 'wp_ajax_kwmmb_item_set', 'kwmmb_ajax_item_set' );
  * Get All booking items in JSON
  */
 function kwmmb_ajax_items_get() {
-    wp_send_json( BookingItem::get_all() );
+    $items = BookingItem::get_all();
+    foreach ($items as $item) {
+        kwmmb_log(print_r($item->as_array(), true));
+        $arr_items[] = $item->as_array();
+    }
+    wp_send_json( $arr_items );
     wp_die(); // All ajax handlers die when finished
 }
 add_action( 'wp_ajax_kwmmb_items_get', 'kwmmb_ajax_items_get' );
@@ -66,7 +71,8 @@ add_action( 'wp_ajax_kwmmb_items_get', 'kwmmb_ajax_items_get' );
 function kwmmb_ajax_item_remove() {
     check_ajax_referer('kwmmb_admin_nonce');
     $id = (int) $_POST['item_id'];
-    wp_send_json( kwmmb_item_remove($id) );
+    $item = BookingItem::get_by_id($id);
+    wp_send_json( $item->remove() );
     wp_die(); // All ajax handlers die when finished
 }
 add_action( 'wp_ajax_kwmmb_item_remove', 'kwmmb_ajax_item_remove' );

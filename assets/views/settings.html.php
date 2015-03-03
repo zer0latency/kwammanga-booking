@@ -51,7 +51,7 @@
         </div>
     </div>
     <table class='kwmmb-admin-table'>
-      <tr class='table-header'><th>Наименование</th><th>Цена</th><th>Цена за весь период</th><th>Вместимость</th><th>Действия</th></tr>
+      <tr class='table-header'><th>Наименование</th><th>Палатки</th><th>Стандарт</th><th>Комфорт</th><th>Эко-люкс</th><th>Действия</th></tr>
 
     </table>
 </div>
