@@ -1,4 +1,4 @@
-CREATE TABLE `<?= $prefix ?>kwmmb-bookings`
+CREATE TABLE `<?= $prefix ?>kwmmb_bookings`
 (
     `id` INT NOT NULL   AUTO_INCREMENT,
     `str_id`      VARCHAR(10)  NOT NULL,
@@ -9,6 +9,8 @@ CREATE TABLE `<?= $prefix ?>kwmmb-bookings`
     `adults`      INT NOT NULL DEFAULT 0,
     `child_0_5`   INT NOT NULL DEFAULT 0,
     `child_6_12`  INT NOT NULL DEFAULT 0,
+    `date_start`  DATE NOT NULL DEFAULT '2015-07-06',
+    `date_end`    DATE NOT NULL DEFAULT '2015-07-13',
     `item`        INT NOT NULL DEFAULT 0,
     `comment`     TEXT NOT NULL DEFAULT '',
     PRIMARY KEY (`id`)

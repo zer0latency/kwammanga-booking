@@ -18,64 +18,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-/**
- * Get plugin file
- * @param type $type (script|image|stylesheet|php)
- * @param type $name e.g. hooks/shortcodes
- * @return string Absolute path to file
- */
-function kwmmb_asset($type, $name) {
-    switch ($type) {
-        case 'script':
-            $path = plugin_dir_url( __FILE__ )."../assets/js/$name.js";
-            break;
-        case 'image':
-            $path = plugin_dir_url( __FILE__ )."../assets/images/$name.png";
-            break;
-        case 'animation':
-            $path = plugin_dir_url( __FILE__ )."../assets/images/$name.gif";
-            break;
-        case 'stylesheet':
-            $path = plugin_dir_url( __FILE__ )."../assets/css/$name.css";
-            break;
-        case 'php':
-            $path = dirname(__file__)."/../$name.php";
-            break;
-        case 'sql':
-            $path = dirname(__file__)."/../db/$name.sql";
-        default:
-            $path = '';
-            break;
-    }
-
-    return $path;
-}
-
-/**
- * Render a template
- *
- * @param string $template
- * @param array $params
- *
- * @return string
- */
-function kwmmb_render($template, $params = array()) {
-    kwmmb_log("Rendering $template");
-    ob_start();
-    extract($params);
-    include kwmmb_asset('php', $template);
-    $rendered_template = ob_get_contents();
-    ob_end_clean();
-
-    return $rendered_template;
-}
-
 function kwmmb_log($message) {
     if (getenv('KWMMB_DEBUG')) {
         error_log($message, 4);
     }
 }
 
-include kwmmb_asset('php', 'includes/db');
-include kwmmb_asset('php', 'hooks/shortcodes');
-include kwmmb_asset('php', 'admin/admin');
+include dirname(__FILE__).'/KwmmbAssetic.php';
+
+// Include bootstrap files, needed to work
+
+include KwmmbAssetic::get('php', 'includes/KwmmbDb');
+include KwmmbAssetic::get('php', 'includes/BookingItem');
+include KwmmbAssetic::get('php', 'includes/Booking');
+include KwmmbAssetic::get('php', 'hooks/shortcodes');
+
+KwmmbDb::update_db();
+
+include KwmmbAssetic::get('php', 'admin/admin');

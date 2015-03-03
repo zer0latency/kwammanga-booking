@@ -26,11 +26,18 @@ Author: Daniil Kolesnik
 Version: 0.1
 Author URI: https://github.com/zer0latency
 */
-require dirname(__file__).'/includes/bootstrap.php';
 
-register_activation_hook(dirname(__file__).'/hooks/activation.php', 'kwmmb_activate');
+/**
+ * Root plugin directory
+ */
+define('KWMMB_DIR', dirname(__FILE__));
+define('KWMMB_URL', plugin_dir_url(__FILE__));
 
-register_deactivation_hook(dirname(__file__).'/hooks/deactivation.php', 'kwmmb_deactivate');
+require KWMMB_DIR.'/includes/bootstrap.php';
+
+register_activation_hook( KwmmbAssetic::get('php', 'hooks/activation'), 'kwmmb_activate' );
+
+register_deactivation_hook( KwmmbAssetic::get('php', 'hooks/deactivation'), 'kwmmb_deactivate' );
 
 add_action( 'admin_menu', 'kwmmb_add_admin_menu' );
 

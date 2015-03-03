@@ -1,6 +1,6 @@
-<?php wp_enqueue_style('kwmmb-admin', kwmmb_asset('stylesheet', 'admin')) ?>
+<?php wp_enqueue_style('kwmmb-admin', KwmmbAssetic::get('stylesheet', 'admin')) ?>
 <?php wp_enqueue_script('ymaps','http://api-maps.yandex.ru/2.1/?lang=ru_RU'); ?>
-<?php wp_enqueue_script('kwmmb-admin', kwmmb_asset('script', 'admin'), array('jquery', 'ymaps')) ?>
+<?php wp_enqueue_script('kwmmb-admin', KwmmbAssetic::get('script', 'admin'), array('jquery', 'ymaps')) ?>
 <div class="wrap">
     <h2>Настройки формы бронирования</h2>
     <div>
@@ -10,37 +10,37 @@
               <input id="kwmmb_ajax_nonce" type='hidden' name="_ajax_nonce" value='<?= wp_create_nonce('kwmmb_admin_nonce') ?>'>
               <div class='kwmmb-field'>
                 <label for="item_name">Название:</label>
-                <input type='text' name='item_name' id="item_name" placeholder="Палатка">
+                <input type='text' name='item_name' id="item_name" placeholder="База Хрустальная">
                 <span class='kwmmb-field-value'></span>
               </div>
               <div class='kwmmb-field'>
                 <label for="item_description">Описание:</label>
-                <input type='text' name='item_description' id="item_description" placeholder="Кондиционер, бла бла бла">
+                <input type='text' name='item_description' id="item_description" placeholder="">
                 <span class='kwmmb-field-value'></span>
               </div>
               <div class='kwmmb-field'>
-                <label for="item_price">Цена:</label>
-                <input type='text' name='item_price' id="item_price" placeholder="650">
+                <label for="item_tents_count">Кол-во палаток:</label>
+                <input type='number' name='item_tents_count' id="item_tents_count" placeholder="650">
                 <span class='kwmmb-field-value'></span>
               </div>
               <div class='kwmmb-field'>
-                <label for="item_price_full">Цена (весь период):</label>
-                <input type='text' name='item_price_full' id="item_price_full" placeholder="5000">
+                <label for="item_standards_count">Кол-во стандартов:</label>
+                <input type='number' name='item_standards_count' id="item_standards_count" placeholder="650">
                 <span class='kwmmb-field-value'></span>
               </div>
               <div class='kwmmb-field'>
-                <label for="item_roominess">Кол-во номеров:</label>
-                <input type='text' name='item_roominess' id="item_roominess" placeholder="20">
+                <label for="item_comforts_count">Кол-во комфортов:</label>
+                <input type='number' name='item_comforts_count' id="item_comforts_count" placeholder="650">
                 <span class='kwmmb-field-value'></span>
               </div>
               <div class='kwmmb-field'>
-                <label for="item_latitude">Широта:</label>
-                <input type='text' name='item_latitude' id="item_latitude" placeholder="44.808763">
+                <label for="item_ecolux_count">Кол-во эко-люксов:</label>
+                <input type='number' name='item_ecolux_count' id="item_ecolux_count" placeholder="650">
                 <span class='kwmmb-field-value'></span>
               </div>
               <div class='kwmmb-field'>
-                <label for="item_longitude">Долгота:</label>
-                <input type='text' name='item_longitude' id="item_longitude" placeholder="37.370311">
+                <label for="item_points">Точки:</label>
+                <input type='text' name='item_points' id="item_points" placeholder="37.370311">
                 <span class='kwmmb-field-value'></span>
               </div>
           </form>
@@ -80,6 +80,6 @@
 
 <script type="text/html" id="kwmmb_loading">
   <div class="kwmmb-loading-backdrop">
-    <img src="<?= kwmmb_asset('animation', 'loading') ?>" alt="Загрузка...">
+    <img src="<?= KwmmbAssetic::get('animation', 'loading') ?>" alt="Загрузка...">
   </div>
 </script>

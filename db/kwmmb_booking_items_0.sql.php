@@ -1,4 +1,4 @@
-CREATE TABLE `<?= $prefix ?>kwmmb-booking_items`
+CREATE TABLE `<?= $prefix ?>kwmmb_booking_items`
 (
     `id` INT NOT NULL AUTO_INCREMENT,
     `name`            VARCHAR(255) NOT NULL,

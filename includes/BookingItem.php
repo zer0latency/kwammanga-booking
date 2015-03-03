@@ -7,204 +7,171 @@ class BookingItem
 {
     //--------------------------------------------------------------------------
     //                             Properties
-    private static $table_name = KWMMB_BASES_TABLE_NAME;
-
     private $id;
-    private $str_id;
     private $name;
-    private $comfort;
-    private $email;
-    private $phone;
-    private $adults;
-    private $child_0_5;
-    private $child_6_12;
-    private $item;
-    private $comment;
+    private $description;
+    private $tents_count;
+    private $standards_count;
+    private $comforts_count;
+    private $ecolux_count;
+    private $points;
     //                             Properties
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
     //                        Getters and Setters
-    function get_id()
+    public function get_id()
     {
         return $this->id;
     }
 
-    function get_str_id()
-    {
-        return $this->str_id;
-    }
-
-    function get_name()
+    public function get_name()
     {
         return $this->name;
     }
 
-    function get_comfort()
+    public function get_description()
     {
-        return $this->comfort;
+        return $this->description;
     }
 
-    function get_email()
+    public function get_tents_count()
     {
-        return $this->email;
+        return $this->tents_count;
     }
 
-    function get_phone()
+    public function get_standards_count()
     {
-        return $this->phone;
+        return $this->standards_count;
     }
 
-    function get_adults()
+    public function get_comforts_count()
     {
-        return $this->adults;
+        return $this->comforts_count;
     }
 
-    function get_child_0_5()
+    public function get_ecolux_count()
     {
-        return $this->child_0_5;
+        return $this->ecolux_count;
     }
 
-    function get_child_6_12()
+    public function get_points()
     {
-        return $this->child_6_12;
+        return $this->points;
     }
 
-    function get_item()
+    public function set_id($id)
     {
-        return $this->item;
-    }
-
-    function get_comment()
-    {
-        return $this->comment;
-    }
-
-    function set_id($id)
-    {
-        $this->id = $this->validate($id, 'int');
+        $this->id = $id;
         return $this;
     }
 
-    function set_str_id($str_id)
-    {
-        $this->str_id = $this->validate($str_id, 'string');
-        return $this;
-    }
-
-    function set_name($name)
+    public function set_name($name)
     {
         $this->name = $name;
         return $this;
     }
 
-    function set_comfort($comfort)
+    public function set_description($description)
     {
-        $this->comfort = $comfort;
+        $this->description = $description;
         return $this;
     }
 
-    function set_email($email)
+    public function set_tents_count($tents_count)
     {
-        $this->email = $email;
+        $this->tents_count = $tents_count;
         return $this;
     }
 
-    function set_phone($phone)
+    public function set_standards_count($standards_count)
     {
-        $this->phone = $phone;
+        $this->standards_count = $standards_count;
         return $this;
     }
 
-    function set_adults($adults)
+    public function set_comforts_count($comforts_count)
     {
-        $this->adults = $adults;
+        $this->comforts_count = $comforts_count;
         return $this;
     }
 
-    function set_child_0_5($child_0_5)
+    public function set_ecolux_count($ecolux_count)
     {
-        $this->child_0_5 = $child_0_5;
+        $this->ecolux_count = $ecolux_count;
         return $this;
     }
 
-    function set_child_6_12($child_6_12)
+    public function set_points($points)
     {
-        $this->child_6_12 = $child_6_12;
+        $this->points = $points;
         return $this;
     }
 
-    function set_item($item)
+    public static function get_table_name()
     {
-        $this->item = $item;
-        return $this;
+        return KwmmbDb::get_table_name('kwmmb_booking_items');
     }
 
-    function set_comment($comment)
-    {
-        $this->comment = $comment;
-        return $this;
-    }
-
-        //                        Getters and Setters
+    //                        Getters and Setters
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
     //                            Constructor
-    function __construct($id, $str_id, $name, $comfort, $email, $phone, $adults, $child_0_5, $child_6_12, $item, $comment)
+    public function __construct($id, $name, $description, $tents_count, $standards_count, $comforts_count, $ecolux_count, $points)
     {
-        $this->id = $id;
-        $this->str_id = $str_id;
-        $this->name = $name;
-        $this->comfort = $comfort;
-        $this->email = $email;
-        $this->phone = $phone;
-        $this->adults = $adults;
-        $this->child_0_5 = $child_0_5;
-        $this->child_6_12 = $child_6_12;
-        $this->item = $item;
-        $this->comment = $comment;
+        $this->set_id($id)
+            ->set_name($name)
+            ->set_description($description)
+            ->set_tents_count($tents_count)
+            ->set_standards_count($standards_count)
+            ->set_comforts_count($comforts_count)
+            ->set_ecolux_count($ecolux_count)
+            ->set_points($points);
     }
     //                            Constructor
     //--------------------------------------------------------------------------
     //---------------------------Static Methods--------------------------
-    public static function createFromObj($obj) {
+    /**
+     * Factory method for create entity from object
+     * @param type $obj
+     * @return \self
+     */
+    public static function create_from_obj($obj)
+    {
         if ($obj === null) {
             return null;
         }
 
-        return new BookingItem(
+        return new self(
             $obj->id,
-            $obj->str_id,
             $obj->name,
-            $obj->comfort,
-            $obj->email,
-            $obj->phone,
-            $obj->adults,
-            $obj->child_0_5,
-            $obj->child_6_12,
-            $obj->item,
-            $obj->comment
+            $obj->description,
+            $obj->tents_count,
+            $obj->standards_count,
+            $obj->comforts_count,
+            $obj->ecolux_count,
+            $obj->points
        );
     }
 
-    public static function getById($id) {
+    public static function get_by_id($id) {
         global $wpdb;
 
-        $id = $this->validate($id, 'int');
+        $id = self::validate($id, 'int');
         if (!$id) {
             return null;
         }
-        $dbObj = $wpdb->get_row("SELECT * FROM $this->table_name WHERE id=$id");
+        $dbObj = $wpdb->get_row("SELECT * FROM ".self::get_table_name()." WHERE id=$id");
 
-        return BookingItem::createFromObj($dbObj);
+        return self::create_from_obj($dbObj);
     }
 
-    public static function getAll() {
+    public static function get_all() {
         global $wpdb;
 
-        $objs = $wpdb->get_results("SELECT * FROM $this->table_name");
+        $objs = $wpdb->get_results("SELECT * FROM ".self::get_table_name());
         $result = array();
         foreach($objs as $obj) {
-            $result[] = BookingItem::createFromObj($obj);
+            $result[$obj->id] = self::create_from_obj($obj);
         }
 
         return $result;
@@ -213,7 +180,28 @@ class BookingItem
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
     //                           Public Methods
-    //
+    public function persist() {
+        global $wpdb;
+
+        kwmmb_log("Persisting model ".__CLASS__." with data:\n".print_r(get_object_vars($this), true));
+
+        if (self::get_by_id($this->id)) {
+            $wpdb->update(self::get_table_name(), get_object_vars($this), array('id' => $this->id));
+        } else {
+            $wpdb->insert(self::get_table_name(), get_object_vars($this));
+        }
+    }
+
+    public function remove()
+    {
+        global $wpdb;
+
+        if (!self::get_by_id($this->id)) {
+            throw new Exception("Booking {$this->str_id} not found.");
+        }
+
+        return $wpdb->delete(self::get_table_name(), array('id' => $this->id));
+    }
     //                           Public Methods
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
@@ -223,7 +211,7 @@ class BookingItem
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
     //                           Private Methods
-    private function validate($value, $type='string') {
+    private static function validate($value, $type='string') {
         global $wpdb;
         $escapedValue = $wpdb->escape($value);
 
@@ -231,9 +219,17 @@ class BookingItem
             case 'int':
                 $escapedValue = (int) $escapedValue;
                 if (!is_integer($escapedValue)) {
-                    return false;
+                    throw new Exception("Validation Error: '$escapedValue' is not valid '$type'.");
                 }
                 break;
+            case 'email':
+                if (false == preg_match('/^[a-z0-9-_\.]{2,}@[a-z0-9-_\.]{2,}\.[a-z0-9]{2,}$/i', $escapedValue)) {
+                    throw new Exception("Validation Error: '$escapedValue' is not valid '$type'.");
+                }
+            case 'phone':
+                if (false == preg_match('/^(\+|)7[0-9]{10}$/', $escapedValue)) {
+                    throw new Exception("Validation Error: '$escapedValue' is not valid '$type'.");
+                }
             default:
                 break;
         }

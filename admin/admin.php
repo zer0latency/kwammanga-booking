@@ -29,7 +29,7 @@ function kwmmb_add_admin_menu() {
         'manage_options',
         'kwmmb-settings',
         'kwmmb_get_admin_page',
-        kwmmb_asset('image', 'icon'),
+        KwmmbAssetic::get('image', 'icon'),
         '23.56'
     );
 }
@@ -38,9 +38,9 @@ function kwmmb_add_admin_menu() {
  * Render a admin page
  */
 function kwmmb_get_admin_page() {
-    echo kwmmb_render(
-        'admin/settings.html',
-        array('items' => kwmmb_items_get_all())
+    echo KwmmbAssetic::render(
+        'assets/views/settings.html',
+        array('items' => BookingItem::get_all())
     );
 }
 
@@ -50,7 +50,9 @@ function kwmmb_get_admin_page() {
 function kwmmb_ajax_item_create() {
     check_ajax_referer( 'kwmmb_admin_nonce' );
 
-    wp_send_json( kwmmb_items_create($_POST) );
+    $item = BookingItem::create_from_obj((object) $_POST);
+
+    wp_send_json( $item->persist() );
     wp_die(); // All ajax handlers die when finished
 }
 add_action( 'wp_ajax_kwmmb_item_create', 'kwmmb_ajax_item_create' );
@@ -71,7 +73,7 @@ add_action( 'wp_ajax_kwmmb_item_set', 'kwmmb_ajax_item_set' );
  * Get All booking items in JSON
  */
 function kwmmb_ajax_items_get() {
-    wp_send_json( kwmmb_items_get_all() );
+    wp_send_json( BookingItem::get_all() );
     wp_die(); // All ajax handlers die when finished
 }
 add_action( 'wp_ajax_kwmmb_items_get', 'kwmmb_ajax_items_get' );
