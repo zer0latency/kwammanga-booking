@@ -45,8 +45,8 @@ add_action( 'wp_ajax_kwmmb_item_create', 'kwmmb_ajax_item_create' );
  */
 function kwmmb_ajax_item_set() {
     check_ajax_referer( 'kwmmb_admin_nonce' );
-    $id = (int) $_POST['id'];
-    wp_send_json( kwmmb_item_set($id, $_POST) );
+    $item = BookingItem::create_from_obj((object) $_POST);
+    wp_send_json( $item->persist() );
     wp_die(); // All ajax handlers die when finished
 }
 add_action( 'wp_ajax_kwmmb_item_set', 'kwmmb_ajax_item_set' );

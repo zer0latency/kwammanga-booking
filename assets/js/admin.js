@@ -44,11 +44,11 @@ function init() {
 function refresh_map() {
   myMap.geoObjects.removeAll();
   jQuery.each(kwmmbItems, function (i, elem) {
-    elem.map_object = new ymaps.Placemark([elem.latitude, elem.longitude], {
+    elem.map_object = new ymaps.Polygon([JSON.parse(elem.points)], {
             balloonContent: render_template('kwmmb_baloon', elem),
-            iconContent: elem.name
+            hint: elem.name
         }, {
-            preset: "islands#greenStretchyIcon"
+            fillColor: "#55ff"+Math.floor(10+(Math.random()*90))
         });
     myMap.geoObjects.add(elem.map_object);
   });
@@ -122,6 +122,12 @@ jQuery('.kwmmb-admin-table').on('click','.kwmmb-table-actions a', function () {
   }
 });
 
+jQuery('#item_points').click(function (e) {
+  if (!currentItem) {
+    kwmmb_item_new();
+  }
+});
+
 function kwmmb_item_remove(id) {
   kwmmb_loading(true);
   jQuery.ajax({
@@ -143,11 +149,29 @@ function kwmmb_item_edit(id) {
     if (item.id === id) {
       currentItem = item;
       currentItem.map_object.balloon.autoPan();
-      currentItem.map_object.balloon.open();
+      currentItem.map_object.editor.startEditing();
+      currentItem.map_object.editor.events.add(["vertexadd", "vertexdragend"], function () {
+        item.points = JSON.stringify(item.map_object.geometry.get(0));
+        jQuery.each(item, function (j, field) {
+          jQuery('#item_'+j).val(field);
+        });
+      });
       jQuery.each(item, function (j, field) {
         jQuery('#item_'+j).val(field);
       });
     }
+  });
+}
+
+function kwmmb_item_new() {
+  var newPoly = new ymaps.Polygon([], {}, {
+      fillColor: "0066ff99",
+      editorDrawingCursor: "crosshair"
+  });
+  myMap.geoObjects.add(newPoly);
+  newPoly.editor.startDrawing();
+  newPoly.editor.events.add(["vertexadd", "vertexdragend"], function () {
+    jQuery('#item_points').val(JSON.stringify(newPoly.geometry.get(0)));
   });
 }
 

@@ -40,7 +40,7 @@
               </div>
               <div class='kwmmb-field'>
                 <label for="item_points">Точки:</label>
-                <input type='text' name='item_points' id="item_points" placeholder="37.370311">
+                <input type='text' name='item_points' id="item_points" placeholder="Щелкните для добавления на карту" readonly="readonly">
                 <span class='kwmmb-field-value'></span>
               </div>
           </form>
@@ -60,17 +60,20 @@
     <h3>{name}</h3>
     <p>{description}</p>
     <ul>
-      <li>За сутки: <b>{price}</b> рублей</li>
-      <li>За сутки: <b>{price_full}</b> рублей</li>
+      <li>Палатки:  <b>{tents_count}</b> мест</li>
+      <li>Стандарт: <b>{standards_count}</b> мест</li>
+      <li>Комфорт:  <b>{comforts_count}</b> мест</li>
+      <li>Эко-люкс: <b>{ecolux_count}</b> мест</li>
     </ul>
 </script>
 
 <script type="text/html" id="kwmmb_admin_row">
   <tr>
     <td>{name}</td>
-    <td>{price}</td>
-    <td>{price_full}</td>
-    <td>{roominess}</td>
+    <td>{tents_count}</td>
+    <td>{standards_count}</td>
+    <td>{comforts_count}</td>
+    <td>{ecolux_count}</td>
     <td class="kwmmb-table-actions">
       <a href="#edit/{id}">Изменить</a>
       <a href="#remove/{id}">Удалить</a>
