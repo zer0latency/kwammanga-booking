@@ -156,9 +156,7 @@ function kwmmb_item_edit(id) {
           jQuery('#item_'+j).val(field);
         });
       });
-      jQuery.each(item, function (j, field) {
-        jQuery('#item_'+j).val(field);
-      });
+      jQuery('#item_points').val(JSON.stringify(item.map_object.geometry.get(0)));
     }
   });
 }

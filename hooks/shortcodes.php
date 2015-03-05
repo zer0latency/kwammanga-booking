@@ -6,11 +6,11 @@ function kwmmb_booking_form_shortcode() {
             'tent'     => 'Палатка',
             'standard' => 'Стандарт',
             'comfort'  => 'Комфорт',
-            'eco-lux'  => 'Эко-люкс',
+            'ecolux'  => 'Эко-люкс',
         )
     );
 
-    return kwmmb_render('assets/views/user-form.html', $params);
+    return KwmmbAssetic::render('assets/views/user-form.html', $params);
 }
 
 function kwmmb_register_form_shortcode() {
