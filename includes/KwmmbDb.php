@@ -11,6 +11,7 @@ class KwmmbDb
     public static $tables  = array(
         'kwmmb_booking_items',
         'kwmmb_bookings',
+        'kwmmb_code',
     );
     //                             Properties
     //--------------------------------------------------------------------------
