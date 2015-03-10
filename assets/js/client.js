@@ -74,12 +74,10 @@ function refreshPlaces() {
 function refreshMap() {
   myMap.geoObjects.removeAll();
   jQuery.each(places, function (i, elem) {
-    elem.map_object = new ymaps.Placemark([elem.latitude, elem.longitude], {
+    elem.map_object = new ymaps.Polygon([JSON.parse(elem.points)], {
             balloonContent: render_template('kwmmb_baloon', elem),
-            iconContent: elem.name
-        }, {
-            preset: "islands#greenStretchyIcon"
-        });
+            hint: elem.name
+        }, {});
     elem.map_object.events.add('click', function (event) {
       currentPlace = this;
       jQuery('#place').val(this.name);

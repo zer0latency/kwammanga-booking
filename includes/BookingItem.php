@@ -176,6 +176,18 @@ class BookingItem
 
         return $result;
     }
+
+    public static function get_all_json() {
+        global $wpdb;
+
+        $objs = $wpdb->get_results("SELECT * FROM ".self::get_table_name());
+        $result = array();
+        foreach($objs as $obj) {
+            $result[] = self::create_from_obj($obj)->as_array();
+        }
+
+        return json_encode($result);
+    }
     //                           Static Methods
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------

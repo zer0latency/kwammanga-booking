@@ -47,9 +47,7 @@ function refresh_map() {
     elem.map_object = new ymaps.Polygon([JSON.parse(elem.points)], {
             balloonContent: render_template('kwmmb_baloon', elem),
             hint: elem.name
-        }, {
-            fillColor: "#55ff"+Math.floor(10+(Math.random()*90))
-        });
+        }, {});
     myMap.geoObjects.add(elem.map_object);
   });
 }
@@ -152,11 +150,11 @@ function kwmmb_item_edit(id) {
       currentItem.map_object.editor.startEditing();
       currentItem.map_object.editor.events.add(["vertexadd", "vertexdragend"], function () {
         item.points = JSON.stringify(item.map_object.geometry.get(0));
-        jQuery.each(item, function (j, field) {
-          jQuery('#item_'+j).val(field);
-        });
+        jQuery('#item_points').val(JSON.stringify(item.map_object.geometry.get(0)));
       });
-      jQuery('#item_points').val(JSON.stringify(item.map_object.geometry.get(0)));
+      jQuery.each(item, function (j, field) {
+        jQuery('#item_'+j).val(field);
+      });
     }
   });
 }
