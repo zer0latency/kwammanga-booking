@@ -34,7 +34,7 @@
         <p><b>Период принятия участия:</b></p>
         <div class='kwmmb-field'>
           <label for="date_range">Когда:</label>
-          <input value="<%= moment(date_start).format('DD.MM.YYYY') %> - <%= moment(date_end).format('DD.MM.YYYY') %>" class="daterange-picker" type='text' name='date_range' id="date_range" placeholder="Щелкните здесь..." readonly="readonly">
+          <input value="<%= moment(m.date_start).format('DD.MM.YYYY') %> - <%= moment(m.date_end).format('DD.MM.YYYY') %>" class="daterange-picker" type='text' name='date_range' id="date_range" placeholder="Щелкните здесь..." readonly="readonly">
           <span class='kwmmb-field-value'></span>
         </div>
         <hr>
@@ -43,7 +43,7 @@
           <table class="kwmmb-places-table">
             <tr>
               <?php foreach ($place_types as $name => $label): ?>
-                <td class="<% if (comfort == "<?= $name ?>") { %>active<% }%>">
+                <td class="<% if (m.comfort == "<?= $name ?>") { %>active<% }%>">
                   <a href="#<?= $name ?>" data-id="<?= $name ?>"><?= $label ?></a>
                 </td>
               <?php endforeach; ?>
@@ -54,64 +54,65 @@
         <div id="ya-map"></div>
         <div class="kwmmb-field">
           <label for="place">Выбранное место:</label>
-          <input value="<%= item.attributes.name %>" type="text" readonly="readonly" name="place" id="place" placeholder="Выберите место на карте">
+          <input value="<%= m.item.attributes.name %>" type="text" readonly="readonly" name="place" id="place" placeholder="Выберите место на карте">
         </div>
         <hr>
         <p><b>Нас:</b></p>
         <div class='kwmmb-field'>
           <label for="adults">Взрослых:</label>
-          <input type='number' name='adults' id="adults" value="<%= adults %>">
+          <input type='number' name='adults' id="adults" value="<%= m.adults %>">
           <span class='kwmmb-field-value'></span>
         </div>
         <div class='kwmmb-field'>
           <label for="child_0_5">Детей 0-5:</label>
-          <input type='number' name='child_0_5' id="child_0_5" value="<%= child_0_5 %>">
+          <input type='number' name='child_0_5' id="child_0_5" value="<%= m.child_0_5 %>">
           <span class='kwmmb-field-value'></span>
         </div>
         <div class='kwmmb-field'>
           <label for="child_6_12">Детей 6-12:</label>
-          <input type='number' name='child_6_12' id="child_6_12" value="<%= child_6_12 %>">
+          <input type='number' name='child_6_12' id="child_6_12" value="<%= m.child_6_12 %>">
           <span class='kwmmb-field-value'></span>
         </div>
         <hr>
         <p>
-          <b style="display: block">Организаторские сборы: <span style="color: #303030; float: right;" id="cost-of-org"></span></b>
-          <b style="display: block">Стоимость проживания:  <span style="color: #303030; float: right;" id="cost-of-living"></span></b>
-          <b style="display: block">Стоимость питания:     <span style="color: #303030; float: right;" id="cost-of-food"></span></b>
-          <b style="display: block">Полная стоимость:      <span style="color: #303030; float: right;" id="cost-of-all"></span></b>
+          <b style="display: block">Организаторские сборы: <span style="color: #303030; float: right;" id="cost-of-org"><%= costs.org %></span></b>
+          <b style="display: block">Стоимость проживания:  <span style="color: #303030; float: right;" id="cost-of-living"><%= costs.live %></span></b>
+          <b style="display: block">Стоимость питания:     <span style="color: #303030; float: right;" id="cost-of-food"><%= costs.food %></span></b>
+          <b style="display: block; text-decoration: underline">Полная стоимость:      <span style="color: #303030; float: right;" id="cost-of-all"><%= costs.food + costs.live + costs.org %></span></b>
         </p>
         <hr>
         <p><b>Контакты:</b></p>
         <div class="kwmmb-field">
           <label for="name">Ваше имя:</label>
-          <input value="<%= name %>" type="text" name="name" id="name" placeholder="Иванов Иван Иванович" required="required">
+          <input value="<%= m.name %>" type="text" name="name" id="name" placeholder="Иванов Иван Иванович" required="required">
         </div>
         <div class="kwmmb-field">
           <label for="email">Email-адрес:</label>
-          <input value="<%= email %>" type="text" name="email" id="email" placeholder="myemail@example.com" required="required">
+          <input value="<%= m.email %>" type="text" name="email" id="email" placeholder="myemail@example.com" required="required">
         </div>
         <div class="kwmmb-field">
           <label for="phone">Телефон:</label>
-          <input value="<%= phone %>" type="text" name="phone" id="phone" placeholder="79231231235" required="required">
+          <input value="<%= m.phone %>" type="text" name="phone" id="phone" placeholder="79231231235" required="required">
         </div>
     </form>
     <button class='kwmmb-item-submit'>Заказать</button>
     <script>
       jQuery(function () {
         Application.bindRangePicker();
-      });
-      ymaps.ready(function () {
-        var myMap = new ymaps.Map("ya-map", {
-          center: [44.808763, 37.370311],
-          zoom: 9
-        });
-        Application.bookingView.items.each(function (el) {
-            var poly = new ymaps.Polygon([JSON.parse(el.attributes.points)]);
-            myMap.geoObjects.add(poly);
-            poly.events.add("click", function () {
-                Application.bookingView.model.set("item", el);
+        ymaps.ready(function () {
+            var myMap = new ymaps.Map("ya-map", {
+              center: [44.808763, 37.370311],
+              zoom: 9
+            });
+            Application.bookingView.items.each(function (el) {
+                var poly = new ymaps.Polygon([JSON.parse(el.attributes.points)]);
+                myMap.geoObjects.add(poly);
+                poly.events.add("click", function () {
+                    Application.bookingView.model.set("item", el);
+                });
             });
         });
       });
+
     </script>
 </script>

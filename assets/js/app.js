@@ -1,6 +1,15 @@
 Backbone.emulateHTTP = true;
 Backbone.emulateJSON = true;
 
+var prices = {
+    org: 2500,
+    food:     { single:  600, full: 4000 },
+    tent:     { single:  250, full: 1500 },
+    standard: { single:  550, full: 3500 },
+    comfort:  { single:  750, full: 5000 },
+    ecolux:   { single: 1000, full: 7000 }
+};
+
 var KwmmbModel = Backbone.Model.extend({
   /*
   sync: function () {
@@ -58,8 +67,8 @@ var BookingView = Backbone.View.extend({
   },
 
   render: function (eventName) {
-    console.log("Rendering", this.model.toJSON());
-    jQuery(this.el).html(this.template(this.model.toJSON()));
+    console.log("Rendering", {m: this.model.toJSON(), costs: this.costs()});
+    jQuery(this.el).html(this.template({m: this.model.toJSON(), costs: this.costs()}));
 
     return this;
   },
@@ -83,6 +92,22 @@ var BookingView = Backbone.View.extend({
 
   saveBooking: function () {
     this.model.save();
+  },
+  
+  costs: function () {
+    var m = this.model;
+    var days = (moment(m.get('date_end'))-moment(m.get('date_start')))/(1000 * 3600 * 24)+1;
+    var peoples = parseInt(m.get('adults')) + parseInt(m.get('child_6_12')) + parseInt(m.get('child_0_5'))*0.5;
+
+    return {
+      org: prices.org*parseInt(m.get('adults')),
+      live: days > 6 
+                  ? prices[m.get('comfort')].full*peoples
+                  : prices[m.get('comfort')].single*days*peoples,
+      food:  days > 6 
+                  ? prices.food.full*peoples
+                  : prices.food.single*days*peoples
+    };
   }
 });
   
