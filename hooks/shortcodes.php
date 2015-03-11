@@ -6,7 +6,7 @@ function kwmmb_booking_form_shortcode() {
             'tent'     => 'Палатка',
             'standard' => 'Стандарт',
             'comfort'  => 'Комфорт',
-            'ecolux'  => 'Эко-люкс',
+            'ecolux'   => 'Эко-люкс',
         )
     );
 
