@@ -35,7 +35,7 @@ var refresh_table = function (from_server) {
 function init() {
   myMap = new ymaps.Map("ya-map", {
             center: [44.808763, 37.370311],
-            zoom: 9
+            zoom: 10
   });
   
   refresh_map();
@@ -180,3 +180,15 @@ function kwmmb_loading(status) {
     jQuery('.kwmmb-loading-backdrop').remove();
   }
 }
+
+// Toggle tabs
+(function ($) {
+  $('.wrap').on('click', 'a.tab-toggle', function (e) {
+    var t = $(e.target);
+    $('.wrap .tab').fadeOut(function () {
+        setTimeout(function () {
+          $(t.attr('tab-href')).fadeIn();
+        }, 500);
+    });
+  });
+})(jQuery);

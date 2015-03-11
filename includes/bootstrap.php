@@ -29,10 +29,9 @@ include dirname(__FILE__).'/KwmmbAssetic.php';
 // Include bootstrap files, needed to work
 
 include KwmmbAssetic::get('php', 'includes/KwmmbDb');
+include KwmmbAssetic::get('php', 'includes/KwmmbAjax');
 include KwmmbAssetic::get('php', 'includes/BookingItem');
 include KwmmbAssetic::get('php', 'includes/Booking');
 include KwmmbAssetic::get('php', 'hooks/shortcodes');
-
-KwmmbDb::update_db();
 
 include KwmmbAssetic::get('php', 'admin/admin');

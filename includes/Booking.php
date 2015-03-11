@@ -237,7 +237,7 @@ class Booking
         if (!$str_id) {
             return null;
         }
-        $dbObj = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".self::get_table_name()." WHERE strid=%s", $str_id));
+        $dbObj = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".self::get_table_name()." WHERE str_id=%s", $str_id));
 
         return self::create_from_obj($dbObj);
     }
@@ -276,6 +276,11 @@ class Booking
         }
 
         return $wpdb->delete(self::get_table_name(), array('id' => $this->id));
+    }
+
+    public function as_array()
+    {
+        return get_object_vars($this);
     }
     //                           Public Methods
     //--------------------------------------------------------------------------

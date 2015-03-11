@@ -3,8 +3,46 @@
 <?php wp_enqueue_script('kwmmb-admin', KwmmbAssetic::get('script', 'admin'), array('jquery', 'ymaps')) ?>
 <div class="wrap">
     <h2>Настройки формы бронирования</h2>
-    <div>
+    <div class='col-50 tab' id='settings-other' style="display: none">
+      <a tab-href='#settings-places' class="tab-toggle">Основные настройки</a>
+      <form method="post" action="options.php">
+        <?php settings_fields( 'kwmmb' ); ?>
+        <?php do_settings_sections( 'kwmmb' ); ?>
+        <table class="form-table">
+            <tr><th colspan="2">Настройки SMS-aero</th></tr>
+            <tr valign="top">
+                <td scope="row">Имя польз.</td>
+                <td><input type="text" name="smsaero_user" value="<?= esc_attr( get_option('smsaero_user') ); ?>" /></td>
+            </tr>
+            <tr valign="top">
+                <td scope="row">Пароль</td>
+                <td><input type="text" name="smsaero_password" value="<?= esc_attr( get_option('smsaero_password') ); ?>" /></td>
+            </tr>
+            <tr valign="top">
+                <td scope="row">Отправитель</td>
+                <td><input type="text" name="smsaero_sender" value="<?= esc_attr( get_option('smsaero_sender') ); ?>" /></td>
+            </tr>
+            <tr><th colspan="2">Настройки карты</th></tr>
+            <tr valign="top">
+                <td scope="row">Широта центра</td>
+                <td><input type="text" name="map_latitude" value="<?= esc_attr( get_option('map_latitude') ); ?>" /></td>
+            </tr>
+            <tr valign="top">
+                <td scope="row">Долгота центра</td>
+                <td><input type="text" name="map_longitude" value="<?= esc_attr( get_option('map_longitude') ); ?>" /></td>
+            </tr>
+            <tr><th colspan="2">Цены</th></tr>
+            <tr valign="top">
+                <td scope="row">Орг. взнос</td>
+                <td><input type="text" name="price_org" value="<?= esc_attr( get_option('price_org') ); ?>" /></td>
+            </tr>
+        </table>
+        <?php submit_button(); ?>
+      </form>
+    </div>
+    <div class="tab" id='settings-places'>
         <div class='col-50'>
+          <a tab-href='#settings-other' class='tab-toggle'>Другие настройки</a>
           <form class='kwmmb-item-form' name='kwmmb-item-form'>
             <h3>Текущий элемент</h3>
               <input id="kwmmb_ajax_nonce" type='hidden' name="_ajax_nonce" value='<?= wp_create_nonce('kwmmb_admin_nonce') ?>'>
@@ -49,11 +87,11 @@
         <div class='col-50'>
           <div class='kwmmb-admin-map' id='ya-map'></div>
         </div>
-    </div>
-    <table class='kwmmb-admin-table'>
-      <tr class='table-header'><th>Наименование</th><th>Палатки</th><th>Стандарт</th><th>Комфорт</th><th>Эко-люкс</th><th>Действия</th></tr>
+        <table class='kwmmb-admin-table'>
+          <tr class='table-header'><th>Наименование</th><th>Палатки</th><th>Стандарт</th><th>Комфорт</th><th>Эко-люкс</th><th>Действия</th></tr>
 
-    </table>
+        </table>
+    </div>
 </div>
 
 <script type="text/html" id="kwmmb_baloon">

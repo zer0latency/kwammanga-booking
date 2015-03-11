@@ -13,6 +13,9 @@ class Code
     protected $booking_id;
     protected $ip;
     protected $date_create;
+
+    private static $message = "Ваш код подтверждения: %s.";
+    private static $smsaero_url = "https://gate.smsaero.ru/send/?";
     //                             Properties
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
@@ -107,13 +110,39 @@ class Code
             ->set_booking_id($booking_id)
             ->set_ip($ip)
             ->set_phone($phone);
-        if ($wpdb->insert(KwmmbDb::get_table_name('kwmmb_code'), get_object_vars($new)))
+
+        // Save to database
+        if (!$wpdb->insert(KwmmbDb::get_table_name('kwmmb_code'), get_object_vars($new)))
         {
-            $new->set_id($wpdb->insert_id);
-            return $new;
+            return null;
+        }
+        $new->set_id($wpdb->insert_id);
+
+        // Try to send SMS message.
+        if (!self::send_to_smsaero($new))
+        {
+            return null;
         }
 
-        return null;
+        return $new;
+    }
+
+    /**
+     * Check validity of code and booking_id
+     * @param int $booking_id
+     * @param string $code
+     * @return boolean
+     */
+    public static function check($booking_id, $code) {
+        $objs = self::get_by(array('booking_id' => $booking_id));
+
+        foreach ($objs as $obj) {
+            if ($obj->code === $code) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static function get_by($cond)
@@ -139,6 +168,27 @@ class Code
         }
 
         return $code;
+    }
+
+    protected static function send_to_smsaero(Code $code) {
+        $params = array(
+            'user='.    get_option('smsaero_user'),
+            'password='.get_option('smsaero_password'),
+            'to='.      $code->get_phone(),
+            'text='.    sprintf(self::$message, $code->get_code()),
+            'from='.    get_option('smsaero_sender'),
+        );
+
+        $request = self::$smsaero_url . implode('&', $params);
+
+        $response = file_get_contents( urlencode($request) );
+
+        if (stripos($response, 'accept') === false) {
+            kwmmb_log("Unable to send SMS: ".$response);
+            return false;
+        }
+
+        return true;
     }
     //                          Protected Methods
     //--------------------------------------------------------------------------

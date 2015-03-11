@@ -16,6 +16,15 @@ function kwmmb_add_admin_menu() {
     );
 }
 
+function register_kwmmb_settings() {
+    register_setting('kwmmb', 'smsaero_user');
+    register_setting('kwmmb', 'smsaero_password');
+    register_setting('kwmmb', 'smsaero_sender');
+    register_setting('kwmmb', 'map_latitude');
+    register_setting('kwmmb', 'map_longitude');
+    register_setting('kwmmb', 'price_org');
+}
+
 /**
  * Render a admin page
  */
@@ -29,50 +38,31 @@ function kwmmb_get_admin_page() {
 /**
  * Ajax processing booking item creation
  */
-function kwmmb_ajax_item_create() {
-    check_ajax_referer( 'kwmmb_admin_nonce' );
-
-    $item = BookingItem::create_from_obj((object) $_POST);
-
-    wp_send_json( $item->persist() );
-    wp_die(); // All ajax handlers die when finished
-}
-add_action( 'wp_ajax_kwmmb_item_create', 'kwmmb_ajax_item_create' );
-
-
-/**
- * Ajax processing booking item update
- */
-function kwmmb_ajax_item_set() {
-    check_ajax_referer( 'kwmmb_admin_nonce' );
-    $item = BookingItem::create_from_obj((object) $_POST);
-    wp_send_json( $item->persist() );
-    wp_die(); // All ajax handlers die when finished
-}
-add_action( 'wp_ajax_kwmmb_item_set', 'kwmmb_ajax_item_set' );
+add_action( 'wp_ajax_kwmmb_item_create', 'KwmmbAjax::item_create' );
 
 /**
  * Get All booking items in JSON
  */
-function kwmmb_ajax_items_get() {
-    $items = BookingItem::get_all();
-    foreach ($items as $item) {
-        kwmmb_log(print_r($item->as_array(), true));
-        $arr_items[] = $item->as_array();
-    }
-    wp_send_json( $arr_items );
-    wp_die(); // All ajax handlers die when finished
-}
-add_action( 'wp_ajax_kwmmb_items_get', 'kwmmb_ajax_items_get' );
+add_action( 'wp_ajax_kwmmb_items_get', 'KwmmbAjax::items_get' );
+
+/**
+ * Ajax processing booking item update
+ */
+add_action( 'wp_ajax_kwmmb_item_set', 'KwmmbAjax::item_set' );
 
 /**
  * Ajax processing booking item removal
  */
-function kwmmb_ajax_item_remove() {
-    check_ajax_referer('kwmmb_admin_nonce');
-    $id = (int) $_POST['item_id'];
-    $item = BookingItem::get_by_id($id);
-    wp_send_json( $item->remove() );
-    wp_die(); // All ajax handlers die when finished
+add_action( 'wp_ajax_kwmmb_item_remove', 'KwmmbAjax::item_remove' );
+
+/**
+ * Ajax processing booking item removal
+ */
+add_action( 'wp_ajax_kwmmb_booking_get', 'KwmmbAjax::booking_get' );
+
+/**
+ * Doesn't know why I really need this
+ */
+if ( is_admin() ) {
+    add_action('admin_init', 'register_kwmmb_settings');
 }
-add_action( 'wp_ajax_kwmmb_item_remove', 'kwmmb_ajax_item_remove' );

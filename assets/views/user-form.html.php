@@ -15,6 +15,9 @@
      * Bootstrap some BookingItems
      */
     var bookingItems = JSON.parse('<?= BookingItem::get_all_json() ?>');
+
+    // Inject options
+    var price_org    = <?= get_option('price_org', 2500); ?>;
 </script>
 
 <script type="text/html" id="kwmmb_baloon">

@@ -2,7 +2,7 @@ Backbone.emulateHTTP = true;
 Backbone.emulateJSON = true;
 
 var prices = {
-    org: 2500,
+    org: price_org || 2500,
     food:     { single:  600, full: 4000 },
     tent:     { single:  250, full: 1500 },
     standard: { single:  550, full: 3500 },
@@ -45,7 +45,7 @@ var Booking = KwmmbModel.extend({
     "name": "",
     "email": "",
     "phone": "",
-    "adults": 0,
+    "adults": 1,
     "child_0_5": 0,
     "child_6_12": 0,
     "date_start": new Date('2015-07-06'),
