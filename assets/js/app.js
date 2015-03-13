@@ -1,4 +1,3 @@
-jQuery( function () {
 Backbone.emulateHTTP = true;
 Backbone.emulateJSON = true;
 
@@ -175,4 +174,3 @@ var Application = (function ($) {
 
   return this;
 })(jQuery);
-});

@@ -5,7 +5,7 @@
 <?php wp_enqueue_script('ymaps',                   'http://api-maps.yandex.ru/2.1/?lang=ru_RU'); ?>
 <?php wp_enqueue_script('underscore',              KwmmbAssetic::get('script', 'underscore-min')) ?>
 <?php wp_enqueue_script('backbone',                KwmmbAssetic::get('script', 'backbone-min')) ?>
-<?php wp_enqueue_script('app',                     KwmmbAssetic::get('script', 'app')) ?>
+<?php wp_enqueue_script('app',                     KwmmbAssetic::get('script', 'app'), array('backbone')) ?>
 <div class="wrap" id="wrap">
 
 </div>
