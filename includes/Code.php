@@ -172,8 +172,8 @@ class Code
 
     protected static function send_to_smsaero(Code $code) {
         $params = array(
-            'user='.    get_option('smsaero_user'),
-            'password='.get_option('smsaero_password'),
+            'user='.    urlencode(get_option('smsaero_user')),
+            'password='.md5(get_option('smsaero_password')),
             'to='.      urlencode($code->get_phone()),
             'text='.    urlencode(sprintf(self::$message, $code->get_code())),
             'from='.    get_option('smsaero_sender'),
