@@ -1,14 +1,7 @@
 Backbone.emulateHTTP = true;
 Backbone.emulateJSON = true;
 
-var prices = {
-    org: price_org || 2500,
-    food:     { single:  600, full: 4000 },
-    tent:     { single:  250, full: 1500 },
-    standard: { single:  550, full: 3500 },
-    comfort:  { single:  750, full: 5000 },
-    ecolux:   { single: 1000, full: 7000 }
-};
+var prices;
 
 var KwmmbModel = Backbone.Model.extend({
   /*
@@ -168,6 +161,14 @@ var Application = (function ($) {
   };
   
   $(function () {
+    prices = {
+        org: price_org || 2500,
+        food:     { single:  600, full: 4000 },
+        tent:     { single:  250, full: 1500 },
+        standard: { single:  550, full: 3500 },
+        comfort:  { single:  750, full: 5000 },
+        ecolux:   { single: 1000, full: 7000 }
+    };
     new Router();
     Backbone.history.start();
   });
