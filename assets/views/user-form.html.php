@@ -47,7 +47,7 @@
             <tr>
               <?php foreach ($place_types as $name => $label): ?>
                 <td class="<% if (m.comfort == "<?= $name ?>") { %>active<% }%>">
-                  <a href="#<?= $name ?>" data-id="<?= $name ?>"><?= $label ?></a>
+                  <a class="tab-toggle" data-id="<?= $name ?>"><?= $label ?></a>
                 </td>
               <?php endforeach; ?>
             </tr>
@@ -103,6 +103,9 @@
       jQuery(function () {
         Application.bindRangePicker();
         ymaps.ready(function () {
+            if (jQuery('#ya-map *').length > 0) {
+                return;
+            }
             var myMap = new ymaps.Map("ya-map", {
               center: [44.808763, 37.370311],
               zoom: 9

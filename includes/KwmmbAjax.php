@@ -50,6 +50,10 @@ class KwmmbAjax
     }
 
     public static function booking_validate() {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            wp_die();
+        }
+        
         $booking = Booking::create_from_obj( json_decode( str_replace('\\', '', $_POST['model'] )) );
         kwmmb_log("KwmmbAjax: ".print_r( json_decode( str_replace('\\', '', $_POST['model'] )), TRUE ));
         if (!$booking) {
@@ -65,6 +69,10 @@ class KwmmbAjax
 
         wp_send_json( array('id' => $booking->get_id(), 'str_id' => $booking->get_str_id()) );
         wp_die();
+    }
+    
+    public static function booking_prove() {
+        
     }
     //                              bookings
     //--------------------------------------------------------------------------

@@ -183,11 +183,13 @@ class Code
 
         $response = file_get_contents( $request );
 
+        kwmmb_log("Sended code {$code->get_code()} to {$code->get_phone()}... ($request)");
+
         if (stripos($response, 'accept') === false) {
             kwmmb_log("Unable to send SMS: ".$response);
             return false;
         }
-        kwmmb_log("Sended code {$code->get_code()} to {$code->get_phone()}...");
+
         return true;
     }
     //                          Protected Methods

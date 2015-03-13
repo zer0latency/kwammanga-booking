@@ -50,6 +50,7 @@ var Booking = KwmmbModel.extend({
     "child_6_12": 0,
     "date_start": new Date('2015-07-06'),
     "date_end": new Date('2015-07-13'),
+    "verified": 0,
     "item": null,
     "comment": ""
   }
@@ -61,7 +62,9 @@ var BookingView = Backbone.View.extend({
   items: new BookingItemsCollection(bookingItems),
 
   initialize: function () {
-    this.model = new Booking({ item: this.items.get('c1') });
+    if (!this.model.get('item')) {
+      this.model.set({ item: this.items.get('c1') });
+    }
     this.model.bind("change", this.render, this);
     this.render();
   },
@@ -91,7 +94,12 @@ var BookingView = Backbone.View.extend({
   },
 
   saveBooking: function () {
-    this.model.save();
+    var self = this;
+    this.model.save({}, {
+      success: function (data) {
+        console.log("saved", data);
+      }
+    });
   },
   
   costs: function () {
@@ -110,11 +118,27 @@ var BookingView = Backbone.View.extend({
     };
   }
 });
+
+var Router = Backbone.Router.extend({
+  routes: {
+    "": "newBooking",
+    "booking/:str_id": "editBooking"
+  },
   
+  newBooking: function () {
+    var booking = new Booking();
+    Application.bookingView = new BookingView({ model: booking });
+  },
+  
+  editBooking: function (str_id) {
+    var booking = new Booking({ str_id: str_id });
+    booking.fetch();
+    Application.bookingView = new BookingView({ model: booking });
+  }
+});
+
 var Application = (function ($) {
   var self = this;
-  
-  this.bookingView = new BookingView();
   
   this.bindRangePicker = function () {
     jQuery('.daterange-picker').dateRangePicker({
@@ -142,6 +166,11 @@ var Application = (function ($) {
       }
     });
   };
+  
+  $(function () {
+    new Router();
+    Backbone.history.start();
+  });
 
   return this;
 })(jQuery);

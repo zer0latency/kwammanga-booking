@@ -12,6 +12,7 @@ CREATE TABLE `<?= $prefix ?>kwmmb_bookings`
     `date_start`  DATE NOT NULL DEFAULT '2015-07-06',
     `date_end`    DATE NOT NULL DEFAULT '2015-07-13',
     `item`        INT NOT NULL DEFAULT 0,
+    `verified`    INT NOT NULL DEFAULT 0,
     `comment`     TEXT NOT NULL DEFAULT '',
     PRIMARY KEY (`id`)
 )

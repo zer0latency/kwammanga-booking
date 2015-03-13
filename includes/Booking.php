@@ -18,6 +18,7 @@ class Booking
     private $child_6_12;
     private $date_start;
     private $date_end;
+    private $verified;
     private $item;
     private $comment;
     //                             Properties
@@ -77,6 +78,11 @@ class Booking
     public function get_date_end()
     {
         return $this->date_end;
+    }
+
+    public function get_verified()
+    {
+        return $this->verified;
     }
 
     public function get_item()
@@ -155,6 +161,12 @@ class Booking
         return $this;
     }
 
+    public function set_verified($verified)
+    {
+        $this->verified = $this->validate($verified, 'int');
+        return $this;
+    }
+
     public function set_item($item)
     {
         $this->item = $this->validate($item, 'item');
@@ -176,7 +188,7 @@ class Booking
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
     //                            Constructor
-    public function __construct($id, $str_id, $name, $comfort, $email, $phone, $adults, $child_0_5, $child_6_12, $date_start, $date_end, $item, $comment)
+    public function __construct($id, $str_id, $name, $comfort, $email, $phone, $adults, $child_0_5, $child_6_12, $date_start, $date_end, $verified, $item, $comment)
     {
         $this
             ->set_name($name)
@@ -188,17 +200,18 @@ class Booking
             ->set_child_6_12($child_6_12)
             ->set_date_start($date_start)
             ->set_date_end($date_end)
+            ->set_verified($verified)
             ->set_item($item)
             ->set_comment($comment);
-        
+
         if (!empty($id)) {
             $this->set_id($id);
         }
-        
+
         if (empty($str_id)) {
             $str_id = self::generate_str_id();
         }
-        
+
         $this->set_str_id($str_id);
     }
     //                            Constructor
@@ -209,7 +222,7 @@ class Booking
         if ( !is_object($obj) ) {
             return null;
         }
-        
+
         if (is_object($obj->item)) {
             $obj->item = $obj->item->id;
         }
@@ -226,6 +239,7 @@ class Booking
             $obj->child_6_12,
             $obj->date_start,
             $obj->date_end,
+            $obj->verified,
             $obj->item,
             $obj->comment
        );
@@ -266,16 +280,16 @@ class Booking
 
         return $result;
     }
-    
+
     protected static function generate_str_id() {
-        $chars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
+        $chars = str_split("qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890");
         $length = 10;
         $str_id = "";
-        
+
         for ($i=0; $i<$length; $i++) {
             $str_id.= $chars[mt_rand(0, count($chars))];
         }
-        
+
         return $str_id;
     }
 
@@ -292,7 +306,7 @@ class Booking
             $wpdb->insert(self::get_table_name(), get_object_vars($this));
             $this->set_id($wpdb->insert_id);
         }
-        
+
         return true;
     }
 
