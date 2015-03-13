@@ -178,8 +178,7 @@ class Booking
     //                            Constructor
     public function __construct($id, $str_id, $name, $comfort, $email, $phone, $adults, $child_0_5, $child_6_12, $date_start, $date_end, $item, $comment)
     {
-        $this->set_id($id)
-            ->set_str_id($str_id)
+        $this
             ->set_name($name)
             ->set_comfort($comfort)
             ->set_email($email)
@@ -191,14 +190,28 @@ class Booking
             ->set_date_end($date_end)
             ->set_item($item)
             ->set_comment($comment);
+        
+        if (!empty($id)) {
+            $this->set_id($id);
+        }
+        
+        if (empty($str_id)) {
+            $str_id = self::generate_str_id();
+        }
+        
+        $this->set_str_id($str_id);
     }
     //                            Constructor
     //--------------------------------------------------------------------------
     //---------------------------Static Methods--------------------------
     public static function create_from_obj($obj)
     {
-        if ($obj === null) {
+        if ( !is_object($obj) ) {
             return null;
+        }
+        
+        if (is_object($obj->item)) {
+            $obj->item = $obj->item->id;
         }
 
         return new self(
@@ -221,7 +234,7 @@ class Booking
     public static function get_by_id($id) {
         global $wpdb;
 
-        $id = $this->validate($id, 'int');
+        $id = (int) $id;
         if (!$id) {
             return null;
         }
@@ -253,6 +266,19 @@ class Booking
 
         return $result;
     }
+    
+    protected static function generate_str_id() {
+        $chars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
+        $length = 10;
+        $str_id = "";
+        
+        for ($i=0; $i<$length; $i++) {
+            $str_id.= $chars[mt_rand(0, count($chars))];
+        }
+        
+        return $str_id;
+    }
+
     //                           Static Methods
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
@@ -261,10 +287,13 @@ class Booking
         global $wpdb;
 
         if (self::get_by_id($this->id)) {
-            $wpdb->update(self::get_table_name(), (array) $this, array('id' => $this->id));
+            $wpdb->update(self::get_table_name(), get_object_vars($this), array('id' => $this->id));
         } else {
-            $wpdb->insert(self::get_table_name(), (array) $this);
+            $wpdb->insert(self::get_table_name(), get_object_vars($this));
+            $this->set_id($wpdb->insert_id);
         }
+        
+        return true;
     }
 
     public function remove()
@@ -299,16 +328,20 @@ class Booking
             case 'int':
                 $escapedValue = (int) $escapedValue;
                 if (!is_integer($escapedValue)) {
-                    throw new Exception("Validation Error: '$escapedValue' is not valid '$type'.");
+                    kwmmb_log("Validator: '$escapedValue'");
+                    throw new Exception("Ошибка ваgfgлидации: не корректный '$type'.");
                 }
                 break;
             case 'email':
-                if (false == preg_match('/^[a-z0-9-_\.]{2,}@[a-z0-9-_\.]{2,}\.[a-z0-9]{2,}$/i', $escapedValue)) {
-                    throw new Exception("Validation Error: '$escapedValue' is not valid '$type'.");
+                if (false == preg_match('/^[a-z0-9-_\\.]{2,}@[a-z0-9-_\\.]{2,}\\.[a-z0-9]{2,}$/i', $escapedValue)) {
+                    kwmmb_log("Validator: '$escapedValue' : ".'/^[a-z0-9-_\\.]{2,}@[a-z0-9-_\\.]{2,}\\.[a-z0-9]{2,}$/i');
+                    throw new Exception("Ошибка ваgfgлидации: не корректный '$type'.");
                 }
+                break;
             case 'phone':
-                if (false == preg_match('/^(\+|)7[0-9]{10}$/', $escapedValue)) {
-                    throw new Exception("Validation Error: '$escapedValue' is not valid '$type'.");
+                if (false == preg_match('/^(\\+|)7[0-9]{10}$/', $escapedValue)) {
+                    kwmmb_log("Validator: '$escapedValue'");
+                    throw new Exception("Ошибка ваgfgлидации: не корректный '$type'.");
                 }
             default:
                 break;

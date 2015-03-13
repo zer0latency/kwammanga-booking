@@ -32,6 +32,7 @@ include KwmmbAssetic::get('php', 'includes/KwmmbDb');
 include KwmmbAssetic::get('php', 'includes/KwmmbAjax');
 include KwmmbAssetic::get('php', 'includes/BookingItem');
 include KwmmbAssetic::get('php', 'includes/Booking');
+include KwmmbAssetic::get('php', 'includes/Code');
 include KwmmbAssetic::get('php', 'hooks/shortcodes');
 
 include KwmmbAssetic::get('php', 'admin/admin');

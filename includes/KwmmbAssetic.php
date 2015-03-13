@@ -50,7 +50,6 @@ class KwmmbAssetic
                 break;
         }
 
-        kwmmb_log("Assetic resolved '$path' for $type $name.");
         return $path;
     }
 

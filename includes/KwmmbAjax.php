@@ -48,6 +48,24 @@ class KwmmbAjax
         wp_send_json( $booking->as_array() );
         wp_die();
     }
+
+    public static function booking_validate() {
+        $booking = Booking::create_from_obj( json_decode( str_replace('\\', '', $_POST['model'] )) );
+        kwmmb_log("KwmmbAjax: ".print_r( json_decode( str_replace('\\', '', $_POST['model'] )), TRUE ));
+        if (!$booking) {
+            wp_send_json( array('error' => 'Форма не прошла валидацию.') );
+            wp_die();
+        }
+
+        if (!$booking->persist()) {
+            kwmmb_log("запись не сохранена...");
+        }
+
+        Code::create($booking->get_phone(), $_SERVER['REMOTE_ADDR'], $booking->get_id());
+
+        wp_send_json( array('id' => $booking->get_id(), 'str_id' => $booking->get_str_id()) );
+        wp_die();
+    }
     //                              bookings
     //--------------------------------------------------------------------------
 }

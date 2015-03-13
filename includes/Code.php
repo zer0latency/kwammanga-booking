@@ -15,7 +15,7 @@ class Code
     protected $date_create;
 
     private static $message = "Ваш код подтверждения: %s.";
-    private static $smsaero_url = "https://gate.smsaero.ru/send/?";
+    private static $smsaero_url = "http://gate.smsaero.ru/send/?";
     //                             Properties
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
@@ -174,20 +174,20 @@ class Code
         $params = array(
             'user='.    get_option('smsaero_user'),
             'password='.get_option('smsaero_password'),
-            'to='.      $code->get_phone(),
-            'text='.    sprintf(self::$message, $code->get_code()),
+            'to='.      urlencode($code->get_phone()),
+            'text='.    urlencode(sprintf(self::$message, $code->get_code())),
             'from='.    get_option('smsaero_sender'),
         );
 
         $request = self::$smsaero_url . implode('&', $params);
 
-        $response = file_get_contents( urlencode($request) );
+        $response = file_get_contents( $request );
 
         if (stripos($response, 'accept') === false) {
             kwmmb_log("Unable to send SMS: ".$response);
             return false;
         }
-
+        kwmmb_log("Sended code {$code->get_code()} to {$code->get_phone()}...");
         return true;
     }
     //                          Protected Methods

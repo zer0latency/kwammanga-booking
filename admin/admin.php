@@ -61,6 +61,11 @@ add_action( 'wp_ajax_kwmmb_item_remove', 'KwmmbAjax::item_remove' );
 add_action( 'wp_ajax_kwmmb_booking_get', 'KwmmbAjax::booking_get' );
 
 /**
+ * Ajax processing booking item removal
+ */
+add_action( 'wp_ajax_kwmmb_booking_validate', 'KwmmbAjax::booking_validate' );
+
+/**
  * Doesn't know why I really need this
  */
 if ( is_admin() ) {

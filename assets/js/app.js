@@ -37,7 +37,7 @@ var BookingItemsCollection = Backbone.Collection.extend({
 });
 
 var Booking = KwmmbModel.extend({
-  url: "/wp-admin/admin-ajax.php?action=kwmmb_item_set",
+  url: "/wp-admin/admin-ajax.php?action=kwmmb_booking_validate",
   defaults: {
     "id": null,
     "str_id": "",
