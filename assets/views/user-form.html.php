@@ -11,9 +11,7 @@
 </div>
 
 <script>
-    /**
-     * Bootstrap some BookingItems
-     */
+    // Bootstrap some BookingItems
     var bookingItems = JSON.parse('<?= BookingItem::get_all_json() ?>');
 
     // Inject options

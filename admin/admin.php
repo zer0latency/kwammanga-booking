@@ -38,32 +38,12 @@ function kwmmb_get_admin_page() {
 /**
  * Ajax processing booking item creation
  */
-add_action( 'wp_ajax_kwmmb_item_create', 'KwmmbAjax::item_create' );
+add_action( 'wp_ajax_nopriv_kwmmb_rest', 'KwmmbRest::router' );
 
 /**
- * Get All booking items in JSON
+ * Ajax processing booking item creation
  */
-add_action( 'wp_ajax_kwmmb_items_get', 'KwmmbAjax::items_get' );
-
-/**
- * Ajax processing booking item update
- */
-add_action( 'wp_ajax_kwmmb_item_set', 'KwmmbAjax::item_set' );
-
-/**
- * Ajax processing booking item removal
- */
-add_action( 'wp_ajax_kwmmb_item_remove', 'KwmmbAjax::item_remove' );
-
-/**
- * Ajax processing booking item removal
- */
-add_action( 'wp_ajax_kwmmb_booking_get', 'KwmmbAjax::booking_get' );
-
-/**
- * Ajax processing booking item removal
- */
-add_action( 'wp_ajax_kwmmb_booking_validate', 'KwmmbAjax::booking_validate' );
+add_action( 'wp_ajax_kwmmb_rest', 'KwmmbRest::router' );
 
 /**
  * Doesn't know why I really need this

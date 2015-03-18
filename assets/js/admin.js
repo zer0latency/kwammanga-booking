@@ -1,4 +1,3 @@
-
 var myMap;
 ymaps.ready(init);
 var kwmmbItems = [];

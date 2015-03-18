@@ -71,8 +71,25 @@ class KwmmbAjax
         wp_die();
     }
     
-    public static function booking_prove() {
+    public static function booking() {
+        $method = $_POST['_method'] ? : 'GET';
+        if ( !method_exists(KwmmbRest, $method) ) {
+            throw new Exception("Unknown method");
+        }
         
+        KwmmbRest::$method("bookings");
+    }
+    
+    public static function booking_items() {
+        $method = $_POST['_method'] ? : 'GET';
+        if (!empty($_GET['str_id'])) {
+            $_POST['model'] = "{ str_id: \"{$_GET['str_id']}\" }";
+        }
+        if ( !method_exists(KwmmbRest, $method) ) {
+            throw new Exception("Unknown method");
+        }
+        
+        KwmmbRest::$method("booking_items");
     }
     //                              bookings
     //--------------------------------------------------------------------------

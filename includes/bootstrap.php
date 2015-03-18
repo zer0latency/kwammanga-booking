@@ -30,6 +30,7 @@ include dirname(__FILE__).'/KwmmbAssetic.php';
 
 include KwmmbAssetic::get('php', 'includes/KwmmbDb');
 include KwmmbAssetic::get('php', 'includes/KwmmbAjax');
+include KwmmbAssetic::get('php', 'includes/classes/KwmmbRest');
 include KwmmbAssetic::get('php', 'includes/BookingItem');
 include KwmmbAssetic::get('php', 'includes/Booking');
 include KwmmbAssetic::get('php', 'includes/Code');

@@ -12,6 +12,7 @@ var KwmmbModel = Backbone.Model.extend({
 });
 
 var BookingItem = KwmmbModel.extend({
+  url: "/wp-admin/admin-ajax.php?action=kwmmb_booking",
   defaults: {
     "id": null,
     "name": "",
@@ -25,12 +26,18 @@ var BookingItem = KwmmbModel.extend({
 });
 
 var BookingItemsCollection = Backbone.Collection.extend({
-  url: '/wp-admin/admin-ajax.php?action=kwmmb_items_get',
+  url: '/wp-admin/admin-ajax.php?action=kwmmb_booking_items',
   model: this.BookingItem
 });
 
 var Booking = KwmmbModel.extend({
-  url: "/wp-admin/admin-ajax.php?action=kwmmb_booking_validate",
+  url: function () {
+    if (this.get('str_id')) {
+      return "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=bookings/" + this.get('str_id');
+    } else {
+      return "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=bookings";
+    }
+  },
   defaults: {
     "id": null,
     "str_id": "",
@@ -63,6 +70,13 @@ var BookingView = Backbone.View.extend({
   },
 
   render: function (eventName) {
+    if (!isNaN(parseInt(this.model.get('item')))) {
+      if (this.model.get('item') == 0) {
+        this.model.set('item', this.items.first());
+      }
+      this.model.set('item', this.items.get(this.model.get('item')));
+      return;
+    }
     console.log("Rendering", {m: this.model.toJSON(), costs: this.costs()});
     jQuery(this.el).html(this.template({m: this.model.toJSON(), costs: this.costs()}));
 
@@ -94,7 +108,7 @@ var BookingView = Backbone.View.extend({
       }
     });
   },
-  
+
   costs: function () {
     var m = this.model;
     var days = (moment(m.get('date_end'))-moment(m.get('date_start')))/(1000 * 3600 * 24)+1;
@@ -102,10 +116,10 @@ var BookingView = Backbone.View.extend({
 
     return {
       org: prices.org*parseInt(m.get('adults')),
-      live: days > 6 
+      live: days > 6
                   ? prices[m.get('comfort')].full*peoples
                   : prices[m.get('comfort')].single*days*peoples,
-      food:  days > 6 
+      food:  days > 6
                   ? prices.food.full*peoples
                   : prices.food.single*days*peoples
     };
@@ -115,24 +129,27 @@ var BookingView = Backbone.View.extend({
 var Router = Backbone.Router.extend({
   routes: {
     "": "newBooking",
-    "booking/:str_id": "editBooking"
+    "bookings/:str_id": "editBooking"
   },
-  
+
   newBooking: function () {
     var booking = new Booking();
     Application.bookingView = new BookingView({ model: booking });
   },
-  
+
   editBooking: function (str_id) {
     var booking = new Booking({ str_id: str_id });
-    booking.fetch();
-    Application.bookingView = new BookingView({ model: booking });
+    booking.fetch({
+      success: function () {
+        Application.bookingView = new BookingView({ model: booking });
+      }
+    });
   }
 });
 
 var Application = (function ($) {
   var self = this;
-  
+
   this.bindRangePicker = function () {
     jQuery('.daterange-picker').dateRangePicker({
       format: 'DD.MM.YYYY',
@@ -159,7 +176,7 @@ var Application = (function ($) {
       }
     });
   };
-  
+
   $(function () {
     prices = {
         org: price_org || 2500,
