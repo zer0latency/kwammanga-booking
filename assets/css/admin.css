@@ -94,3 +94,12 @@ and open the template in the editor.
   background: linear-gradient(to bottom,  #feffff 0%,#d2ebf9 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#feffff', endColorstr='#d2ebf9',GradientType=0 );
 }
+
+.kwmmb-admin-menu li {
+    display: inline-block;
+    margin-right: 50px;
+}
+
+.kwmmb-admin-menu .active {
+    display: none;
+}

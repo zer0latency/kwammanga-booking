@@ -4,45 +4,11 @@
 <div class="wrap">
     <h2>Настройки формы бронирования</h2>
     <div class='col-50 tab' id='settings-other' style="display: none">
-      <a tab-href='#settings-places' class="tab-toggle">Основные настройки</a>
-      <form method="post" action="options.php">
-        <?php settings_fields( 'kwmmb' ); ?>
-        <?php do_settings_sections( 'kwmmb' ); ?>
-        <table class="form-table">
-            <tr><th colspan="2">Настройки SMS-aero</th></tr>
-            <tr valign="top">
-                <td scope="row">Имя польз.</td>
-                <td><input type="text" name="smsaero_user" value="<?= esc_attr( get_option('smsaero_user') ); ?>" /></td>
-            </tr>
-            <tr valign="top">
-                <td scope="row">Пароль</td>
-                <td><input type="text" name="smsaero_password" value="<?= esc_attr( get_option('smsaero_password') ); ?>" /></td>
-            </tr>
-            <tr valign="top">
-                <td scope="row">Отправитель</td>
-                <td><input type="text" name="smsaero_sender" value="<?= esc_attr( get_option('smsaero_sender') ); ?>" /></td>
-            </tr>
-            <tr><th colspan="2">Настройки карты</th></tr>
-            <tr valign="top">
-                <td scope="row">Широта центра</td>
-                <td><input type="text" name="map_latitude" value="<?= esc_attr( get_option('map_latitude') ); ?>" /></td>
-            </tr>
-            <tr valign="top">
-                <td scope="row">Долгота центра</td>
-                <td><input type="text" name="map_longitude" value="<?= esc_attr( get_option('map_longitude') ); ?>" /></td>
-            </tr>
-            <tr><th colspan="2">Цены</th></tr>
-            <tr valign="top">
-                <td scope="row">Орг. взнос</td>
-                <td><input type="text" name="price_org" value="<?= esc_attr( get_option('price_org') ); ?>" /></td>
-            </tr>
-        </table>
-        <?php submit_button(); ?>
-      </form>
+
     </div>
     <div class="tab" id='settings-places'>
         <div class='col-50'>
-          <a tab-href='#settings-other' class='tab-toggle'>Другие настройки</a>
+          <a href='#settings'>Другие настройки</a>
           <form class='kwmmb-item-form' name='kwmmb-item-form'>
             <h3>Текущий элемент</h3>
               <input id="kwmmb_ajax_nonce" type='hidden' name="_ajax_nonce" value='<?= wp_create_nonce('kwmmb_admin_nonce') ?>'>
@@ -123,4 +89,92 @@
   <div class="kwmmb-loading-backdrop">
     <img src="<?= KwmmbAssetic::get('animation', 'loading') ?>" alt="Загрузка...">
   </div>
+</script>
+
+<!-- Bookings template -->
+<script type="text/html" id="template-bookings">
+    <ul class="kwmmb-admin-menu">
+      <li class="active"><a href="#bookings">Заказы</a></li>
+      <li><a href="#booking_items">Базы</a></li>
+      <li><a href="#settings">Настройки</a></li>
+    </ul>
+    <table class='kwmmb-admin-table'>
+      <tr class='table-header'><th>Ид</th><th>Email</th><th>Имя</th><th>Телефон</th><th>Дата с</th><th>Дата по</th><th>Действия</th></tr>
+    <% bookings.each(function (e) { %>
+        <tr>
+          <td><%= e.get('str_id') %></td>
+          <td><%= e.get('email') %></td>
+          <td><%= e.get('name') %></td>
+          <td><%= e.get('phone') %></td>
+          <td><%= e.get('date_start') %></td>
+          <td><%= e.get('date_end') %></td>
+          <td><a href='<%= e.showUrl() %>'>просмотр</a></td>
+        </tr>
+    <% }) %>
+    </table>
+</script>
+
+<!-- Booking show template -->
+<script type="text/html" id="template-booking">
+    <ul class="kwmmb-admin-menu">
+      <li><a href="#bookings">Заказы</a></li>
+      <li><a href="#booking_items">Базы</a></li>
+      <li><a href="#settings">Настройки</a></li>
+    </ul>
+    <ul>
+        <li>Ид: <strong><%= booking.get('str_id') %></strong></li>
+        <li>E-Mail: <strong><%= booking.get('email') %></strong></li>
+        <li>Имя: <strong><%= booking.get('name') %></strong></li>
+        <li>Телефон: <strong><%= booking.get('phone') %></strong></li>
+        <li>Дата с: <strong><%= booking.get('date_start') %></strong></li>
+        <li>Дата по: <strong><%= booking.get('date_end') %></strong></li>
+        <li>Взрослых: <strong><%= booking.get('adults') %></strong></li>
+        <li>Детей: <strong><%= booking.get('child_0_5') %></strong></li>
+        <li>Подростков: <strong><%= booking.get('child_6_12') %></strong></li>
+        <li>Подтвержден: <strong><%= booking.get('verified') === "0" ? "Нет" : "Да" %></strong></li>
+        <li>Место: <strong><%= "" %></strong></li>
+    </ul>
+</script>
+
+<!-- Settings template -->
+<script type="text/html" id="template-settings">
+    <ul class="kwmmb-admin-menu">
+      <li><a href="#bookings">Заказы</a></li>
+      <li><a href="#booking_items">Базы</a></li>
+      <li class="active"><a href="#settings">Настройки</a></li>
+    </ul>
+    <form method="post" action="options.php">
+      <?php settings_fields( 'kwmmb' ); ?>
+      <?php do_settings_sections( 'kwmmb' ); ?>
+      <table class="form-table">
+          <tr><th colspan="2">Настройки SMS-aero</th></tr>
+          <tr valign="top">
+              <td scope="row">Имя польз.</td>
+              <td><input type="text" name="smsaero_user" value="<?= esc_attr( get_option('smsaero_user') ); ?>" /></td>
+          </tr>
+          <tr valign="top">
+              <td scope="row">Пароль</td>
+              <td><input type="text" name="smsaero_password" value="<?= esc_attr( get_option('smsaero_password') ); ?>" /></td>
+          </tr>
+          <tr valign="top">
+              <td scope="row">Отправитель</td>
+              <td><input type="text" name="smsaero_sender" value="<?= esc_attr( get_option('smsaero_sender') ); ?>" /></td>
+          </tr>
+          <tr><th colspan="2">Настройки карты</th></tr>
+          <tr valign="top">
+              <td scope="row">Широта центра</td>
+              <td><input type="text" name="map_latitude" value="<?= esc_attr( get_option('map_latitude') ); ?>" /></td>
+          </tr>
+          <tr valign="top">
+              <td scope="row">Долгота центра</td>
+              <td><input type="text" name="map_longitude" value="<?= esc_attr( get_option('map_longitude') ); ?>" /></td>
+          </tr>
+          <tr><th colspan="2">Цены</th></tr>
+          <tr valign="top">
+              <td scope="row">Орг. взнос</td>
+              <td><input type="text" name="price_org" value="<?= esc_attr( get_option('price_org') ); ?>" /></td>
+          </tr>
+      </table>
+      <?php submit_button(); ?>
+    </form>
 </script>
