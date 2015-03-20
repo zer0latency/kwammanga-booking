@@ -1,9 +1,9 @@
-CREATE TABLE `<?= $prefix ?>kwmmb_booking_items`
+CREATE TABLE `<?= $prefix ?>kwmmb_rooms`
 (
     `id` INT NOT NULL AUTO_INCREMENT,
     `name`            VARCHAR(255) NOT NULL,
-    `description`     TEXT         NOT NULL,
-    `points`          TEXT         NOT NULL,
+    `count`           INT          NOT NULL,
+    `item_id`         INT          NOT NULL,
     PRIMARY KEY (`id`)
 )
 ENGINE = MyISAM

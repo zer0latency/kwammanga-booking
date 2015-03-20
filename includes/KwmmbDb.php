@@ -10,6 +10,7 @@ class KwmmbDb
     public static $version = 0;
     public static $tables  = array(
         'kwmmb_booking_items',
+        'kwmmb_rooms',
         'kwmmb_bookings',
         'kwmmb_code',
     );

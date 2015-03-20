@@ -4,6 +4,10 @@ Backbone.emulateJSON = true;
 var KwmmbAdmin = (function ($) {
   var self = this;
 
+  this.currentView = {undelegateEvents: function () {}};
+  /**
+   * Router of our application
+   */
   this.Router = Backbone.Router.extend({
     routes: {
       "": "bookings",
@@ -11,17 +15,20 @@ var KwmmbAdmin = (function ($) {
       "bookings/:str_id":  "bookings_show",
       "booking_items":     "booking_items",
       "booking_items/new": "booking_items_new",
-      "booking_items/:id": "bookings_items_edit",
+      "booking_items/:id": "booking_items_edit",
       "settings":          "settings"
     },
-    bookings: function () { new self.BookingsView(); },
-    bookings_show: function (str_id) {var model = new self.Booking({id: str_id}); new self.BookingView({model: model}); },
-    booking_items: function () { console.log("booking_items"); },
-    booking_items_new: function () { console.log("booking_items_new"); },
-    booking_items_edit: function () { console.log("booking_items_edit"); },
-    settings: function () { new self.SettingsView(); }
+    bookings:           function ()       { self.currentView.undelegateEvents(); self.currentView = new self.BookingsView(); },
+    bookings_show:      function (str_id) { self.currentView.undelegateEvents(); self.currentView = new self.BookingView({model: new self.Booking({id: str_id})}); },
+    booking_items:      function ()       { self.currentView.undelegateEvents(); self.currentView = new self.BookingItemsView(); },
+    booking_items_new:  function ()       { self.currentView.undelegateEvents(); self.currentView = new self.BookingItemView({ model: new self.BookingItem() }); },
+    booking_items_edit: function (id)     { self.currentView.undelegateEvents(); self.currentView = new self.BookingItemView({ model: new self.BookingItem({id: id}) }); },
+    settings:           function ()       { self.currentView.undelegateEvents(); self.currentView = new self.SettingsView(); }
   });
 
+  /**
+   * The Booking model
+   */
   this.Booking = Backbone.Model.extend({
     urlRoot: "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=bookings",
     showUrl: function () {
@@ -29,15 +36,98 @@ var KwmmbAdmin = (function ($) {
     }
   });
 
+  /**
+   * The BookingItem model
+   */
   this.BookingItem = Backbone.Model.extend({
-    urlRoot: "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=booking_items"
+    urlRoot: "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=booking_items",
+    editUrl: function () {
+      return "#booking_items/" + this.get('id');
+    }
   });
 
+  /**
+   * Bookings Collection
+   */
   this.BookingCollection = Backbone.Collection.extend({
     url: "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=bookings",
     model: self.Booking
   });
 
+  /**
+   * BookingItems Collection
+   */
+  this.BookingItemCollection = Backbone.Collection.extend({
+    url: "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=booking_items",
+    model: self.BookingItem
+  });
+  
+  /**
+   * BookingItems View
+   */
+  this.BookingItemsView = Backbone.View.extend({
+    el: $('.wrap'),
+    template: _.template($('#template-booking-items').html()),
+    initialize: function () {
+      var biView = this;
+      this.booking_items = new self.BookingItemCollection();
+      this.booking_items.fetch({
+        success: function () { biView.render(); }
+      });
+    },
+    render: function () {
+      $(this.el).hide().html(this.template({ items: this.booking_items })).fadeIn();
+    },
+    events: {
+      "click .remove": "removeItem"
+    },
+    removeItem: function (event) {
+      var self = this;
+      var targetId = $(event.target).attr('data-id');
+      console.log("Deleting BookingItem #"+targetId);
+      var model = this.booking_items.get(targetId);
+      model.destroy({ success: function () { self.render(); } });
+    }
+  });
+  
+  /**
+   * BookingItem View
+   */
+  this.BookingItemView = Backbone.View.extend({
+    el: $('.wrap'),
+    template: _.template($('#template-booking-item').html()),
+    initialize: function () {
+      var biView = this;
+      console.log("Navigating to booking item");
+      if (this.model.get('id')) {
+        this.model.fetch({
+          success: function () { biView.render(); }
+        });
+      } else { this.render(); }
+    },
+    render: function () {
+      $(this.el).hide().html(this.template({ m: this.model })).fadeIn();
+      return this;
+    },
+    events: {
+      "change input": "change",
+      "click .save": "save"
+    },
+    change: function (e) {
+      var target = e.target;
+      console.log("Changing" + target.id + " to " + target.value);
+      this.model.set(target.id, target.value);
+    },
+    save: function () {
+      this.model.save({}, {
+        success: function () { self.router.navigate("booking_items", { trigger: true }); }
+      });
+    }
+  });
+
+  /**
+   * Settings View (wp_options)
+   */
   this.SettingsView = Backbone.View.extend({
     el: $('.wrap'),
     template: _.template($('#template-settings').html()),
@@ -50,6 +140,9 @@ var KwmmbAdmin = (function ($) {
     }
   });
 
+  /**
+   * Bookings View
+   */
   this.BookingsView = Backbone.View.extend({
     el: $('.wrap'),
     template: _.template($('#template-bookings').html()),
@@ -66,6 +159,9 @@ var KwmmbAdmin = (function ($) {
     }
   });
 
+  /**
+   * Single Booking View
+   */
   this.BookingView = Backbone.View.extend({
     el: $('.wrap'),
     template: _.template($('#template-booking').html()),

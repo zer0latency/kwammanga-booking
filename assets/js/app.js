@@ -101,7 +101,6 @@ var BookingView = Backbone.View.extend({
   },
 
   saveBooking: function () {
-    var self = this;
     this.model.save({}, {
       success: function (data) {
         console.log("saved", data);

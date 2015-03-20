@@ -19,7 +19,7 @@ class KwmmbRest {
             );
         }
         try {
-            kwmmb_log("KwmmbRest: triggered $method on $model".PHP_EOL.print_r([$where], true));
+            kwmmb_log("KwmmbRest: triggered $method on $model".PHP_EOL.print_r($where, true));
             header(self::$protocol." $header");
             wp_send_json( KwmmbRest::$method($model, $where) );
         } catch (Exception $e) {
@@ -46,12 +46,12 @@ class KwmmbRest {
      */
     public static function POST($model_name)
     {
-        $model = json_decode( $_POST['model'] );
-        if (!KwmmbDb::get_table_name("kwmmb_$model_name")) {
+        $model = json_decode( str_replace('\"','"',$_POST['model']), true );
+        if (!KwmmbDb::get_table_name($model_name)) {
             throw new Exception("Unknown model.");
         }
 
-        KwmmbDb::save("kwmmb_$model_name", $model);
+        return KwmmbDb::save($model_name, $model);
     }
 
     /**
@@ -63,7 +63,7 @@ class KwmmbRest {
         if (!KwmmbDb::get_table_name($model_name)) {
             throw new Exception("Unknown model");
         }
-        kwmmb_log($_POST['model']);
+        
         return KwmmbDb::save($model_name, $model, $where);
     }
 
@@ -78,8 +78,13 @@ class KwmmbRest {
     /**
      * Backbone delete
      */
-    public static function DELETE()
+    public static function DELETE($model_name, $where)
     {
-
+        $model = json_decode( str_replace('\"','"',$_POST['model']), true );
+        if (!KwmmbDb::get_table_name($model_name)) {
+            throw new Exception("Unknown model");
+        }
+        
+        return KwmmbDb::delete($model_name, $where);
     }
 }

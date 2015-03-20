@@ -2,7 +2,6 @@ CREATE TABLE `<?= $prefix ?>kwmmb_bookings`
 (
     `id` INT NOT NULL   AUTO_INCREMENT,
     `str_id`      VARCHAR(10)  NOT NULL,
-    `comfort`     VARCHAR(255) NOT NULL,
     `name`        VARCHAR(255) NOT NULL,
     `email`       VARCHAR(255) NOT NULL,
     `phone`       VARCHAR(15)  NOT NULL,
