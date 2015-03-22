@@ -3,6 +3,11 @@
 class KwmmbRest {
 
     private static $protocol = "HTTP/1.1";
+    private static $pubRoutes = array(
+      "new_booking" => "KwmmbRest::saveBooking",
+      "bookings"  => "KwmmbRest::getBooking",
+      "check_code"   => "KwmmbRest::checkCode"
+    );
 
     public static function router() {
         $route = explode('/', $_GET['route']);
@@ -26,6 +31,18 @@ class KwmmbRest {
             header(self::$protocol." 400 Bad Request");
             wp_send_json(array("error" => $e->getMessage()));
         }
+    }
+
+    public static function pubRouter() {
+        $route = explode('/', $_GET['route']);
+        $route_name = $route[0];
+        $route_param = $route[1];
+
+        $method = self::$pubRoutes[$route_name];
+        if (empty($method)) { kwmmb_log("Route not found: {$route_name}"); wp_die(); }
+        kwmmb_log("Route: $method");
+
+        return call_user_func($method, $route_param);
     }
 
     /**
@@ -63,7 +80,7 @@ class KwmmbRest {
         if (!KwmmbDb::get_table_name($model_name)) {
             throw new Exception("Unknown model");
         }
-        
+
         return KwmmbDb::save($model_name, $model, $where);
     }
 
@@ -84,7 +101,67 @@ class KwmmbRest {
         if (!KwmmbDb::get_table_name($model_name)) {
             throw new Exception("Unknown model");
         }
-        
+
         return KwmmbDb::delete($model_name, $where);
+    }
+
+    public static function saveBooking() {
+      $model = json_decode( str_replace('\"','"',$_POST['model']), true );
+      $model['str_id'] = self::generate_str_id();
+      $result = KwmmbDb::save("kwmmb_bookings", $model);
+
+      if (!count($result)) {
+        wp_die();
+      }
+
+      if ($model['verified'] == 0) {
+        $code = Code::create($model['phone'], $_SERVER['REMOTE_ADDR'], $result["id"]);
+      }
+
+      $result["str_id"] = $model['str_id'];
+      wp_send_json($result);
+    }
+
+    public static function getBooking($str_id) {
+      if (isset($_POST['_method'])) {
+        $model = json_decode( str_replace('\"','"',$_POST['model']), true );
+        wp_send_json(KwmmbDb::save('kwmmb_bookings', $model, array('str_id' => $str_id)));
+      }
+      wp_send_json(KwmmbDb::select('kwmmb_bookings', array('str_id' => $str_id)));
+    }
+
+    public static function checkCode() {
+      $model = json_decode( str_replace('\"','"',$_POST['model']), true );
+
+      $status = Code::check($model['booking_id'], $model['code']);
+
+      if ($status) {
+        KwmmbDb::save('kwmmb_bookings', ['verified'=>1], ['id' => $model['booking_id']]);
+        KwmmbRest::sendMail($model['booking_id']);
+      }
+
+      wp_send_json([ "success" => $status]);
+    }
+
+    protected static function generate_str_id() {
+      $chars = str_split("qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890");
+      $length = 10;
+      $str_id = "";
+
+      for ($i=0; $i<$length; $i++) {
+          $str_id.= $chars[mt_rand(0, count($chars))];
+      }
+
+      return $str_id;
+    }
+
+    protected static function sendMail($booking_id) {
+      $to = 'dandydan2k@gmail.com';
+      $subject = 'Kwammanga.ru - ваш заказ принят.';
+      $model = KwmmbDb::select("kwmmb_bookings", array( "id" => $booking_id));
+      $body = KwmmbAssetic::render("assets/views/email.html", array('model' => $model));
+      $headers = array('Content-Type: text/html; charset=UTF-8', 'From: Kwammanga.ru <admin@localhost>');
+
+      wp_mail( $to, $subject, $body, $headers );
     }
 }

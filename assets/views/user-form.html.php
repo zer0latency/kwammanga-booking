@@ -3,75 +3,73 @@
 <?php wp_enqueue_script('moment',                  KwmmbAssetic::get('script', 'moment.min')) ?>
 <?php wp_enqueue_script('jquery-daterange-picker', KwmmbAssetic::get('script', 'jquery.daterangepicker')) ?>
 <?php wp_enqueue_script('ymaps',                   'http://api-maps.yandex.ru/2.1/?lang=ru_RU'); ?>
-<?php wp_enqueue_script('underscore',              KwmmbAssetic::get('script', 'underscore-min')) ?>
-<?php wp_enqueue_script('backbone',                KwmmbAssetic::get('script', 'backbone-min')) ?>
 <?php wp_enqueue_script('app',                     KwmmbAssetic::get('script', 'app'), array('backbone'), '', true) ?>
 <div class="wrap" id="wrap">
 
 </div>
 
 <script>
-    // Bootstrap some BookingItems
-    var bookingItems = JSON.parse('<?= BookingItem::get_all_json() ?>');
-
+    // Bootstrap some models
+    var rooms_prefill = <?= json_encode(KwmmbDb::select("kwmmb_rooms")) ?>;
+    var items_prefill = <?= json_encode(KwmmbDb::select("kwmmb_booking_items")) ?>;
     // Inject options
     var price_org    = <?= get_option('price_org', 2500); ?>;
 </script>
 
-<script type="text/html" id="kwmmb_baloon">
-    <h3>{name}</h3>
-    <p>{description}</p>
+<script type="text/html" id="template-map-object">
+    <h3><%= m.get('name') %></h3>
+    <p><%= m.get('description') %></p>
     <ul>
-      <li>Палатки:  <b>{tents_count}</b> мест</li>
-      <li>Стандарт: <b>{standards_count}</b> мест</li>
-      <li>Комфорт:  <b>{comforts_count}</b> мест</li>
-      <li>Эко-люкс: <b>{ecolux_count}</b> мест</li>
+      <% KwmmbApp.rooms.byItemId(m.get('id')).each(function (room) { %>
+      <li><%= room.get('name') %>: <%= room.get('count') %> (<strong><%= room.get('price') %> руб. за человека</strong>)</li>
+      <% }); %>
     </ul>
+    <button data-id="<%= m.get('id') %>" class="select-item">Выбрать</button>
 </script>
 
 <script type="text/html" id="template-booking">
     <form class='kwmmb-item-form' name='kwmmb-item-form'>
         <input id="kwmmb_ajax_nonce" type='hidden' name="_ajax_nonce" value='<?= wp_create_nonce('kwmmb_user_nonce') ?>'>
-        <p><b>Период принятия участия:</b></p>
+        <p><b>Период участия:</b></p>
         <div class='kwmmb-field'>
           <label for="date_range">Когда:</label>
-          <input value="<%= moment(m.date_start).format('DD.MM.YYYY') %> - <%= moment(m.date_end).format('DD.MM.YYYY') %>" class="daterange-picker" type='text' name='date_range' id="date_range" placeholder="Щелкните здесь..." readonly="readonly">
+          <input value="<%= m.getRange() %>" class="daterange-picker" type='text' name='date_range' id="date_range" placeholder="Щелкните здесь..." readonly="readonly">
           <span class='kwmmb-field-value'></span>
         </div>
         <hr>
-        <div class='kwmmb-field'>
-          <label for="place_type">Тип размещения:</label>
-          <table class="kwmmb-places-table">
-            <tr>
-              <?php foreach ($place_types as $name => $label): ?>
-                <td class="<% if (m.comfort == "<?= $name ?>") { %>active<% }%>">
-                  <a class="tab-toggle" data-id="<?= $name ?>"><?= $label ?></a>
-                </td>
-              <?php endforeach; ?>
-            </tr>
-          </table>
-        </div>
         <p><b>Доступные базы:</b></p>
         <div id="ya-map"></div>
         <div class="kwmmb-field">
           <label for="place">Выбранное место:</label>
-          <input value="<%= m.item.attributes.name %>" type="text" readonly="readonly" name="place" id="place" placeholder="Выберите место на карте">
+          <input value="<%= currentItem.get('name') %>" type="text" readonly="readonly" name="place" id="place" placeholder="Выберите место на карте">
+        </div>
+        <p><b>Тип размещения:</b></p>
+        <div class="kwmmb-field">
+          <% KwmmbApp.rooms.byItemId(currentItem.get('id')).each(function (room) { %>
+          <label for="item"><%= room.get('name') %></label>
+          <input <% if (room.get('id') === m.get('item').get('id')) { %>checked<% } %> type="radio" name="item" id="item" value="<%= room.get('id') %>">
+          <% }); %>
         </div>
         <hr>
         <p><b>Нас:</b></p>
         <div class='kwmmb-field'>
           <label for="adults">Взрослых:</label>
-          <input type='number' name='adults' id="adults" value="<%= m.adults %>">
+          <input type='number' name='adults' id="adults" value="<%= m.get('adults') %>">
           <span class='kwmmb-field-value'></span>
         </div>
         <div class='kwmmb-field'>
           <label for="child_0_5">Детей 0-5:</label>
-          <input type='number' name='child_0_5' id="child_0_5" value="<%= m.child_0_5 %>">
+          <input type='number' name='child_0_5' id="child_0_5" value="<%= m.get('child_0_5') %>">
           <span class='kwmmb-field-value'></span>
         </div>
         <div class='kwmmb-field'>
           <label for="child_6_12">Детей 6-12:</label>
-          <input type='number' name='child_6_12' id="child_6_12" value="<%= m.child_6_12 %>">
+          <input type='number' name='child_6_12' id="child_6_12" value="<%= m.get('child_6_12') %>">
+          <span class='kwmmb-field-value'></span>
+        </div>
+        <div class='kwmmb-field'>
+          <label for="food">Питание:</label>
+          <input type='number' name='food' id="food" value="<%= m.get('food') %>">
           <span class='kwmmb-field-value'></span>
         </div>
         <hr>
@@ -85,38 +83,29 @@
         <p><b>Контакты:</b></p>
         <div class="kwmmb-field">
           <label for="name">Ваше имя:</label>
-          <input value="<%= m.name %>" type="text" name="name" id="name" placeholder="Иванов Иван Иванович" required="required">
+          <input value="<%= m.get('name') %>" type="text" name="name" id="name" placeholder="Иванов Иван Иванович" required="required">
         </div>
         <div class="kwmmb-field">
           <label for="email">Email-адрес:</label>
-          <input value="<%= m.email %>" type="text" name="email" id="email" placeholder="myemail@example.com" required="required">
+          <input value="<%= m.get('email') %>" type="text" name="email" id="email" placeholder="myemail@example.com" required="required">
         </div>
         <div class="kwmmb-field">
           <label for="phone">Телефон:</label>
-          <input value="<%= m.phone %>" type="text" name="phone" id="phone" placeholder="79231231235" required="required">
+          <input value="<%= m.get('phone') %>" type="text" name="phone" id="phone" placeholder="79231231235" required="required" <% if (m.isVerified()) { %>readonly="readonly"<% } %>>
         </div>
     </form>
-    <button class='kwmmb-item-submit'>Заказать</button>
-    <script>
-      jQuery(function () {
-        Application.bindRangePicker();
-        ymaps.ready(function () {
-            if (jQuery('#ya-map *').length > 0) {
-                return;
-            }
-            var myMap = new ymaps.Map("ya-map", {
-              center: [44.808763, 37.370311],
-              zoom: 9
-            });
-            Application.bookingView.items.each(function (el) {
-                var poly = new ymaps.Polygon([JSON.parse(el.attributes.points)]);
-                myMap.geoObjects.add(poly);
-                poly.events.add("click", function () {
-                    Application.bookingView.model.set("item", el);
-                });
-            });
-        });
-      });
+    <% if (m.isVerified()) { %>
+    <button class='kwmmb-item-submit'>Изменить</button>
+    <% } else { %>
+    <button class='kwmmb-item-submit'>Отправить код подтверждения</button>
+    <% } %>
+    <div id="code"></div>
+</script>
 
-    </script>
+<script type="text/html" id="template-code">
+  <div class="kwmmb-field">
+    <label for="code">Телефон:</label>
+    <input value="<%= m.get('code') %>" type="text" name="code" id="code" placeholder="Код подтверждения" required="required">
+  </div>
+  <button class="accept">Подтвердить</button>
 </script>

@@ -4,6 +4,7 @@ CREATE TABLE `<?= $prefix ?>kwmmb_rooms`
     `name`            VARCHAR(255) NOT NULL,
     `count`           INT          NOT NULL,
     `price`           INT          NOT NULL,
+    `price_full`      INT          NOT NULL,
     `item_id`         INT          NOT NULL,
     PRIMARY KEY (`id`)
 )

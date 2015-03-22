@@ -8,6 +8,7 @@ CREATE TABLE `<?= $prefix ?>kwmmb_bookings`
     `adults`      INT NOT NULL DEFAULT 0,
     `child_0_5`   INT NOT NULL DEFAULT 0,
     `child_6_12`  INT NOT NULL DEFAULT 0,
+    `food`        INT NOT NULL DEFAULT 0,
     `date_start`  DATE NOT NULL DEFAULT '2015-07-06',
     `date_end`    DATE NOT NULL DEFAULT '2015-07-13',
     `item`        INT NOT NULL DEFAULT 0,

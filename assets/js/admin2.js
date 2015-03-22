@@ -30,7 +30,11 @@ var KwmmbAdmin = (function ($, ymaps, _, Backbone) {
    * The Booking model
    */
   this.Booking = Backbone.Model.extend({
-    urlRoot: "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=bookings",
+    url: function () {
+      console.log(id, this);
+      var id = this.get('str_id')!=="" ? this.get('str_id') : this.get('id');
+      return "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=bookings/" + id;
+    },
     showUrl: function () {
       return "#bookings/" + this.get('str_id');
     }
@@ -126,6 +130,7 @@ var KwmmbAdmin = (function ($, ymaps, _, Backbone) {
         name: this.$('#room_name').val(),
         count: this.$("#room_count").val(),
         price: this.$('#room_price').val(),
+        price_full: this.$('#room_price_full').val(),
         item_id: this.model.get('id')
       });
       room.save({},{
@@ -263,6 +268,19 @@ var KwmmbAdmin = (function ($, ymaps, _, Backbone) {
     render: function () {
       $(this.el).hide().html(this.template({ bookings: this.bookings })).fadeIn();
       return this;
+    },
+    events: {
+      "click .delete": "deleteItem"
+    },
+    deleteItem: function (e) {
+      var item_id = $(e.target).attr('data-id'),
+          booking = this.bookings.get(item_id),
+          view = this;
+      booking.destroy({
+        success: function () {
+          view.render();
+        }
+      });
     }
   });
 
@@ -274,7 +292,6 @@ var KwmmbAdmin = (function ($, ymaps, _, Backbone) {
     template: _.template($('#template-booking').html()),
     initialize: function () {
       var self   = this;
-      console.log("Searching "+this.model.get('str_id'));
       this.model.fetch({ success: function () { self.render(); }});
     },
     render: function () {
@@ -287,16 +304,14 @@ var KwmmbAdmin = (function ($, ymaps, _, Backbone) {
     self.router = new self.Router();
     Backbone.history.start();
   });
-  
+
   $(document).ajaxStart(function () {
-    console.log((_.template($('#template-loading').html()))());
     $('#wp-admin-bar-root-default').append(
       _.template($('#template-loading').html())()
     );
   });
-  
+
   $(document).ajaxStop(function () {
-    console.log("Ajax ended");
     $('#wp-admin-bar-root-default .kwmmb-loading').remove();
   });
 

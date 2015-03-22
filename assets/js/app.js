@@ -1,152 +1,7 @@
-Backbone.emulateHTTP = true;
-Backbone.emulateJSON = true;
+var KwmmbApp = (function ($, _, Backbone, ymaps) {
+  Backbone.emulateJSON = true;
+  Backbone.emulateHTTP = true;
 
-var prices;
-
-var KwmmbModel = Backbone.Model.extend({
-  /*
-  sync: function () {
-    console.log("Saving to database");
-  }
-  */
-});
-
-var BookingItem = KwmmbModel.extend({
-  url: "/wp-admin/admin-ajax.php?action=kwmmb_booking",
-  defaults: {
-    "id": null,
-    "name": "",
-    "description": "",
-    "tents_count": null,
-    "standards_count": null,
-    "comforts_count": null,
-    "ecolux_count": null,
-    "points": []
-  }
-});
-
-var BookingItemsCollection = Backbone.Collection.extend({
-  url: '/wp-admin/admin-ajax.php?action=kwmmb_booking_items',
-  model: this.BookingItem
-});
-
-var Booking = KwmmbModel.extend({
-  url: function () {
-    if (this.get('str_id')) {
-      return "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=bookings/" + this.get('str_id');
-    } else {
-      return "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=bookings";
-    }
-  },
-  defaults: {
-    "id": null,
-    "str_id": "",
-    "comfort": "tent",
-    "name": "",
-    "email": "",
-    "phone": "",
-    "adults": 1,
-    "child_0_5": 0,
-    "child_6_12": 0,
-    "date_start": new Date('2015-07-06'),
-    "date_end": new Date('2015-07-13'),
-    "verified": 0,
-    "item": null,
-    "comment": ""
-  }
-});
-
-var BookingView = Backbone.View.extend({
-  el: jQuery('#wrap'),
-  template: _.template(jQuery('#template-booking').html()),
-  items: new BookingItemsCollection(bookingItems),
-
-  initialize: function () {
-    if (!this.model.get('item')) {
-      this.model.set({ item: this.items.get('c1') });
-    }
-    this.model.bind("change", this.render, this);
-    this.render();
-  },
-
-  render: function (eventName) {
-    if (!isNaN(parseInt(this.model.get('item')))) {
-      if (this.model.get('item') == 0) {
-        this.model.set('item', this.items.first());
-      }
-      this.model.set('item', this.items.get(this.model.get('item')));
-      return;
-    }
-    console.log("Rendering", {m: this.model.toJSON(), costs: this.costs()});
-    jQuery(this.el).html(this.template({m: this.model.toJSON(), costs: this.costs()}));
-
-    return this;
-  },
-
-  events: {
-    "change input": "change",
-    "click .kwmmb-item-submit": "saveBooking",
-    "click .kwmmb-places-table a": "changeComfort"
-  },
-
-  change: function (event) {
-    var target = event.target;
-    console.log("Changing", target.id, "from", target.defaultValue, "to", target.value);
-    this.model.set(target.id, target.value);
-  },
-
-  changeComfort: function (event) {
-    var comfort = jQuery(event.target).attr('data-id');
-    this.model.set('comfort', comfort);
-  },
-
-  saveBooking: function () {
-    this.model.save({}, {
-      success: function (data) {
-        console.log("saved", data);
-      }
-    });
-  },
-
-  costs: function () {
-    var m = this.model;
-    var days = (moment(m.get('date_end'))-moment(m.get('date_start')))/(1000 * 3600 * 24)+1;
-    var peoples = parseInt(m.get('adults')) + parseInt(m.get('child_6_12')) + parseInt(m.get('child_0_5'))*0.5;
-
-    return {
-      org: prices.org*parseInt(m.get('adults')),
-      live: days > 6
-                  ? prices[m.get('comfort')].full*peoples
-                  : prices[m.get('comfort')].single*days*peoples,
-      food:  days > 6
-                  ? prices.food.full*peoples
-                  : prices.food.single*days*peoples
-    };
-  }
-});
-
-var Router = Backbone.Router.extend({
-  routes: {
-    "": "newBooking",
-    "bookings/:str_id": "editBooking"
-  },
-
-  newBooking: function () {
-    var booking = new Booking();
-    Application.bookingView = new BookingView({ model: booking });
-  },
-
-  editBooking: function (str_id) {
-    var booking = new Booking({ str_id: str_id });
-    booking.fetch({
-      success: function () {
-        Application.bookingView = new BookingView({ model: booking });
-      }
-    });
-  }
-});
-
-var Application = (function ($) {
   var self = this;
 
   this.bindRangePicker = function () {
@@ -176,18 +31,224 @@ var Application = (function ($) {
     });
   };
 
+  var KwmmbModel = Backbone.Model.extend({
+
+  });
+
+    /**
+   * Room Model
+   */
+  var Room = Backbone.Model.extend({
+    urlRoot: "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=rooms"
+  });
+
+  /**
+   * Room Collection
+   */
+  var RoomCollection = Backbone.Collection.extend({
+    url: "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=rooms",
+    model: Room,
+    byItemId: function (item_id) {
+      var filtered = this.filter(function (room) { return room.get('item_id') === item_id; });
+      return new RoomCollection(filtered);
+    }
+  });
+
+  var BookingItem = KwmmbModel.extend({
+    url: "/wp-admin/admin-ajax.php?action=kwmmb_booking",
+    defaults: {
+      "points": []
+    }
+  });
+
+  var BookingItemsCollection = Backbone.Collection.extend({
+    url: '/wp-admin/admin-ajax.php?action=kwmmb_booking_items',
+    model: BookingItem
+  });
+
+  var Booking = KwmmbModel.extend({
+    url: function () {
+      if (this.get('str_id')) {
+        return "/wp-admin/admin-ajax.php?action=kwmmb_pub&route=bookings/" + this.get('str_id');
+      } else {
+        return "/wp-admin/admin-ajax.php?action=kwmmb_pub&route=new_booking";
+      }
+    },
+    defaults: {
+      "id": null,
+      "str_id":    "",
+      "adults":     1,
+      "child_0_5":  0,
+      "child_6_12": 0,
+      "food":       0,
+      "date_start": new Date('2015-07-06'),
+      "date_end": new Date('2015-07-13'),
+      "verified": 0,
+      "item": null,
+      "comment": ""
+    },
+    getDays: function () {
+      return (moment(this.get('date_end'))-moment(this.get('date_start')))/(1000 * 3600 * 24)+1;
+    },
+    getRange: function () {
+      return moment(this.get('date_start')).format('DD.MM.YYYY') + ' - ' + moment(this.get('date_end')).format('DD.MM.YYYY');
+    },
+    isVerified: function () {
+      return this.get('verified') === "1";
+    }
+  });
+
+  var Code = KwmmbModel.extend({
+    url: "/wp-admin/admin-ajax.php?action=kwmmb_pub&route=check_code"
+  });
+
+  var CodeView = Backbone.View.extend({
+    el: 'div#code',
+    template: _.template($('#template-code').html()),
+    initialize: function () {
+      this.render();
+    },
+    render: function () {
+      this.$el.html(this.template({ m: this.model }));
+    },
+    events: {
+      "change #code": "change",
+      "click .accept": "saveCode"
+    },
+    change: function (e) {
+      var target = e.target;
+      this.model.set(target.id, target.value);
+    },
+    saveCode: function () {
+      this.model.save({
+        success: function () { console.log("Success!!!"); }
+      });
+    }
+  });
+
+  var BookingView = Backbone.View.extend({
+    el: jQuery('#wrap'),
+    template: _.template(jQuery('#template-booking').html()),
+    balloonTemplate: _.template(jQuery('#template-map-object').html()),
+    items: new BookingItemsCollection(items_prefill),
+    rooms: new RoomCollection(rooms_prefill),
+
+    initialize: function () {
+      var item = this.model.get('item');
+      if (!item) { this.model.set({ item: this.rooms.first() }); }
+      if (parseInt(item)) { this.model.set({ item: this.rooms.get(item) }); }
+      this.currentItem = this.items.get(this.model.get('item').get('item_id'));
+      this.model.bind("change", this.render, this);
+      this.render();
+    },
+
+    render: function () {
+      var item = this.model.get('item');
+      if (parseInt(item)) { this.model.set({ item: this.rooms.get(item) }); return; }
+      jQuery(this.el).html(this.template({ m: this.model, costs: this.costs(), currentItem: this.currentItem}));
+      this.renderMap();
+      if (!this.model.get('id')) {
+        return this;
+      }
+      if (this.model.get("verified") === "0") {
+        this.code = new Code({booking_id: this.model.get('id')});
+        this.codeView = new CodeView({ model: this.code });
+      }
+      return this;
+    },
+
+    renderMap: function () {
+      var view = this;
+      self.bindRangePicker();
+      ymaps.ready(function () {
+          if (jQuery('#ya-map *').length > 0) { return; }
+          var myMap = new ymaps.Map("ya-map", { center: JSON.parse(view.currentItem.get('points'))[0], zoom: 12 });
+          view.items.each(function (el) {
+              var poly = new ymaps.Polygon([JSON.parse(el.attributes.points)], {
+                balloonContent: view.balloonTemplate({ m: el })
+              });
+              myMap.geoObjects.add(poly);
+          });
+      });
+    },
+
+    events: {
+      "change form input": "change",
+      "click .kwmmb-item-submit": "saveBooking",
+      "click .kwmmb-places-table a": "changeComfort",
+      "click .select-item": "selectItem"
+    },
+
+    change: function (event) {
+      var target = event.target;
+      this.model.set(target.id, target.value);
+    },
+
+    changeComfort: function (event) {
+      var comfort = jQuery(event.target).attr('data-id');
+      this.model.set('comfort', comfort);
+    },
+
+    selectItem: function (e) {
+      var item_id = $(e.target).attr('data-id');
+      this.currentItem = this.items.get(item_id);
+      this.render();
+    },
+
+    saveBooking: function () {
+      var view = this;
+      this.model.save({}, {
+        success: function (data) {
+          self.router.navigate("bookings/"+view.model.get('str_id'), { trigger: true });
+        }
+      });
+    },
+
+    costs: function () {
+      var m = this.model;
+      var days = (moment(m.get('date_end'))-moment(m.get('date_start')))/(1000 * 3600 * 24)+1;
+      var peoples = parseInt(m.get('adults')) + parseInt(m.get('child_6_12')) + parseInt(m.get('child_0_5'))*0.5;
+
+      return {
+        org: price_org*parseInt(m.get('adults')),
+        live: days > 6
+                    ? m.get('item').get('price_full')*peoples
+                    : m.get('item').get('price')*days*peoples,
+        food:  days > 6
+                    ? 4200*parseInt(m.get('food'))
+                    : 600*days*parseInt(m.get('food'))
+      };
+    }
+  });
+
+  self.rooms = new RoomCollection(rooms_prefill);
+  self.booking_items = new BookingItemsCollection(items_prefill);
+  var Router = Backbone.Router.extend({
+    routes: {
+      "": "newBooking",
+      "bookings/:str_id": "editBooking"
+    },
+
+    newBooking: function () {
+      self.booking = new Booking();
+      self.bookingView = new BookingView({ model: self.booking });
+    },
+
+    editBooking: function (str_id) {
+      self.booking = new Booking({ str_id: str_id });
+      booking.fetch({
+        success: function () {
+          self.bookingView = new BookingView({ model: self.booking });
+        }
+      });
+    }
+  });
+
+
   $(function () {
-    prices = {
-        org: price_org || 2500,
-        food:     { single:  600, full: 4000 },
-        tent:     { single:  250, full: 1500 },
-        standard: { single:  550, full: 3500 },
-        comfort:  { single:  750, full: 5000 },
-        ecolux:   { single: 1000, full: 7000 }
-    };
-    new Router();
+    self.router = new Router();
     Backbone.history.start();
   });
 
   return this;
-})(jQuery);
+})(jQuery, _, Backbone, ymaps);

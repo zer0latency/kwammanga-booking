@@ -36,18 +36,18 @@ function kwmmb_get_admin_page() {
 }
 
 /**
- * Ajax processing booking item creation
+ * Ajax processing bookings creation
  */
-add_action( 'wp_ajax_nopriv_kwmmb_rest', 'KwmmbRest::router' );
-
-/**
- * Ajax processing booking item creation
- */
-add_action( 'wp_ajax_kwmmb_rest', 'KwmmbRest::router' );
+add_action( 'wp_ajax_kwmmb_pub', 'KwmmbRest::pubRouter' );
+add_action( 'wp_ajax_nopriv_kwmmb_pub', 'KwmmbRest::pubRouter' );
 
 /**
  * Doesn't know why I really need this
  */
 if ( is_admin() ) {
+    /**
+     * Ajax processing booking item creation
+     */
+    add_action( 'wp_ajax_kwmmb_rest', 'KwmmbRest::router' );
     add_action('admin_init', 'register_kwmmb_settings');
 }

@@ -1,6 +1,6 @@
 <?php wp_enqueue_style('kwmmb-admin', KwmmbAssetic::get('stylesheet', 'admin')) ?>
 <?php wp_enqueue_script('ymaps','http://api-maps.yandex.ru/2.1/?lang=ru_RU'); ?>
-<?php wp_enqueue_script('kwmmb-admin', KwmmbAssetic::get('script', 'admin2'), array('jquery', 'ymaps', 'backbone')) ?>
+<?php wp_enqueue_script('kwmmb-admin', KwmmbAssetic::get('script', 'admin2'), array('jquery', 'ymaps', 'backbone'), '', true) ?>
 
 <script>
   var rooms_prefill = <?= json_encode(KwmmbDb::select("kwmmb_rooms")) ?>;
@@ -14,7 +14,7 @@
     <p><%= m.get('description') %></p>
     <ul>
       <% KwmmbAdmin.rooms.byItemId(m.get('id')).each(function (room) { %>
-      <li><%= room.get('name') %>: <strong><%= room.get('count') %></strong></li>
+      <li><%= room.get('name') %>: <%= room.get('count') %> (<strong><%= room.get('price') %> руб. за человека</strong>)</li>
       <% }); %>
     </ul>
 </script>
@@ -44,17 +44,19 @@
   <td><%= m.get('name') %></td>
   <td><%= m.get('count') %></td>
   <td><%= m.get('price') %></td>
+  <td><%= m.get('price_full') %></td>
   <td><a class="delete" style="cursor: pointer">Удалить</a></td>
 </script>
 
 <!-- RoomCollection Template -->
 <script type='text/html' id="template-rooms">
   <% if (m.get('id')) { %>
-  <tr class="table-header"><th>Название</th><th>Кол-во</th><th>Цена</th><th>Действия</th></tr>
+  <tr class="table-header"><th>Название</th><th>Кол-во</th><th>Цена</th><th>Ц. за 7 дней</th><th>Действия</th></tr>
   <tr class="room-new">
     <td><input type="text" id="room_name" /></td>
     <td><input type="number" id="room_count" /></td>
     <td><input type="number" id="room_price" /></td>
+    <td><input type="number" id="room_price_full" /></td>
     <td><button class="create">Добавить</button></td>
   </tr>
   <% } else { %>
@@ -116,7 +118,7 @@
         <td><%= e.get('phone') %></td>
         <td><%= e.get('date_start') %></td>
         <td><%= e.get('date_end') %></td>
-        <td><a href='<%= e.showUrl() %>'>просмотр</a></td>
+        <td><a href='<%= e.showUrl() %>'>просмотр</a> | <a class="delete" data-id="<%= e.get('id') %>" style="cursor: pointer">удалить</a></td>
       </tr>
   <% }) %>
   </table>
