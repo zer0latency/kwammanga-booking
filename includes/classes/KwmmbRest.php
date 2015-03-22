@@ -136,11 +136,11 @@ class KwmmbRest {
       $status = Code::check($model['booking_id'], $model['code']);
 
       if ($status) {
-        KwmmbDb::save('kwmmb_bookings', ['verified'=>1], ['id' => $model['booking_id']]);
+        KwmmbDb::save('kwmmb_bookings', array('verified'=>1), array('id' => $model['booking_id']));
         KwmmbRest::sendMail($model['booking_id']);
       }
 
-      wp_send_json([ "success" => $status]);
+      wp_send_json(array( "success" => $status));
     }
 
     protected static function generate_str_id() {
