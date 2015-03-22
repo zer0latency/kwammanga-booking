@@ -104,7 +104,7 @@ class KwmmbDb
     {
         global $wpdb;
         $real_table_name = self::get_table_name($table_name);
-                
+
         $data = array_map(function ($item) {
             if ( !is_array($item) )   { return $item; }
             if ( isset($item['id']) ) { return $item['id']; }
@@ -209,8 +209,8 @@ class KwmmbDb
             $param = $params[$column->Field];
             if (!$param) { continue; }
 
-            $type = explode('(', $column->Type)[0];
-            switch ($type) {
+            $type = explode('(', $column->Type);
+            switch ($type[0]) {
                 case 'int':
                     $placeholder = '%d';
                     break;
