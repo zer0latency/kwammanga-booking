@@ -8,6 +8,7 @@ Author: Daniil Kolesnik
 Version: 0.4
 Author URI: https://github.com/zer0latency
 GitHub Plugin URI: zer0latency/kwammanga-booking
+GitHub Branch:     master
 */
 
 /**
