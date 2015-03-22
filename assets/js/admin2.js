@@ -1,7 +1,7 @@
-Backbone.emulateHTTP = true;
-Backbone.emulateJSON = true;
+var KwmmbAdmin = (function ($, ymaps, _, Backbone) {
+  Backbone.emulateHTTP = true;
+  Backbone.emulateJSON = true;
 
-var KwmmbAdmin = (function ($) {
   var self = this;
 
   this.currentView = {undelegateEvents: function () {}};
@@ -61,7 +61,83 @@ var KwmmbAdmin = (function ($) {
     url: "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=booking_items",
     model: self.BookingItem
   });
-  
+
+  /**
+   * Room Model
+   */
+  this.Room = Backbone.Model.extend({
+    urlRoot: "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=rooms"
+  });
+
+  /**
+   * Room Collection
+   */
+  this.RoomCollection = Backbone.Collection.extend({
+    url: "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=rooms",
+    model: self.Room,
+    byItemId: function (item_id) {
+      var filtered = this.filter(function (room) { return room.get('item_id') === item_id; });
+      return new self.RoomCollection(filtered);
+    }
+  });
+
+  /**
+   * Room View
+   */
+  this.RoomView = Backbone.View.extend({
+    tagName: "tr",
+    template: _.template($('#template-room').html()),
+    render: function () {
+      $(this.el).html(this.template({ m: this.model }));
+    },
+    events: { "click .delete": "deleteRoom" },
+    deleteRoom: function () {
+      var view = this;
+      this.model.destroy({
+        success: function () {
+          view.remove();
+        }
+      });
+    }
+  });
+
+  /**
+   * RoomCollection View
+   */
+  this.RoomCollectionView = Backbone.View.extend({
+    el: 'table#rooms',
+    template: _.template($('#template-rooms').html()),
+    initialize: function () { this.render(); },
+    render: function () {
+      var rcView = this;
+      this.$el.html(this.template({ m: this.model }));
+      this.collection.byItemId(this.model.get('id')).each(function (room) {
+        var roomView = new self.RoomView({ id: "room" + room.get('id'), model: room });
+        rcView.$el.append(roomView.el);
+        roomView.render();
+      });
+    },
+    events: {
+      "click button.create": "createRoom"
+    },
+    createRoom: function () {
+      var view = this;
+      var room = new self.Room({
+        name: this.$('#room_name').val(),
+        count: this.$("#room_count").val(),
+        price: this.$('#room_price').val(),
+        item_id: this.model.get('id')
+      });
+      room.save({},{
+        success: function () {
+          view.collection.push(room);
+          view.render();
+        }
+      });
+      this.render();
+    }
+  });
+
   /**
    * BookingItems View
    */
@@ -84,21 +160,22 @@ var KwmmbAdmin = (function ($) {
     removeItem: function (event) {
       var self = this;
       var targetId = $(event.target).attr('data-id');
-      console.log("Deleting BookingItem #"+targetId);
       var model = this.booking_items.get(targetId);
       model.destroy({ success: function () { self.render(); } });
     }
   });
-  
+
+  this.rooms = new self.RoomCollection(rooms_prefill);
+
   /**
    * BookingItem View
    */
   this.BookingItemView = Backbone.View.extend({
     el: $('.wrap'),
     template: _.template($('#template-booking-item').html()),
+    baloonTemplate: _.template($('#template-map-object').html()),
     initialize: function () {
       var biView = this;
-      console.log("Navigating to booking item");
       if (this.model.get('id')) {
         this.model.fetch({
           success: function () { biView.render(); }
@@ -107,21 +184,51 @@ var KwmmbAdmin = (function ($) {
     },
     render: function () {
       $(this.el).hide().html(this.template({ m: this.model })).fadeIn();
+      var view = this;
+      ymaps.ready(function () {
+        view.map = new ymaps.Map("ya-map", {
+          center: [44.808763, 37.370311],
+          zoom: 10
+        });
+        view.fillMap();
+        new self.RoomCollectionView({ collection: self.rooms, model: view.model });
+      });
       return this;
     },
     events: {
-      "change input": "change",
+      "change .booking-item input": "change",
       "click .save": "save"
     },
     change: function (e) {
       var target = e.target;
-      console.log("Changing" + target.id + " to " + target.value);
       this.model.set(target.id, target.value);
     },
     save: function () {
-      this.model.save({}, {
-        success: function () { self.router.navigate("booking_items", { trigger: true }); }
+      var model = this.model;
+      var toEdit = !(model.get('id'));
+      model.save({}, {
+        success: function () {
+          self.router.navigate(
+            toEdit ? "booking_items/"+model.get('id') : "booking_items",
+            { trigger: true }
+          );
+        }
       });
+    },
+    fillMap: function () {
+      this.map.geoObjects.removeAll();
+      var points = this.model.get('points') === undefined ? [] : [JSON.parse(this.model.get('points'))];
+      this.map_object = new ymaps.Polygon(points,
+        { balloonContent: this.baloonTemplate({ m: this.model }) },
+        { editorDrawingCursor: "crosshair" });
+      this.map.geoObjects.add(this.map_object);
+      if (points.length === 0) { this.map_object.editor.startDrawing(); }
+        else { this.map_object.editor.startEditing(); }
+      this.map_object.events.add(["geometrychange"], this.changeMap, this);
+    },
+    changeMap:  function () {
+      this.model.set('points', JSON.stringify(this.map_object.geometry.get(0)));
+      $('#points').val(JSON.stringify(this.map_object.geometry.get(0)));
     }
   });
 
@@ -176,10 +283,22 @@ var KwmmbAdmin = (function ($) {
     }
   });
 
-  jQuery(function () {
+  $(function () {
     self.router = new self.Router();
     Backbone.history.start();
   });
+  
+  $(document).ajaxStart(function () {
+    console.log((_.template($('#template-loading').html()))());
+    $('#wp-admin-bar-root-default').append(
+      _.template($('#template-loading').html())()
+    );
+  });
+  
+  $(document).ajaxStop(function () {
+    console.log("Ajax ended");
+    $('#wp-admin-bar-root-default .kwmmb-loading').remove();
+  });
 
   return this;
-})(jQuery);
+})(jQuery, ymaps, _, Backbone);

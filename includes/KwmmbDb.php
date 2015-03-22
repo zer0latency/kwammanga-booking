@@ -116,7 +116,9 @@ class KwmmbDb
             $result = $wpdb->update($real_table_name, $data, $where);
         } else {
             $action = "insert";
-            $result = $wpdb->insert($real_table_name, $data);
+            if ($wpdb->insert($real_table_name, $data)) {
+              $result = array( "id" => $wpdb->insert_id);
+            }
         }
 
         if (false === $result) {

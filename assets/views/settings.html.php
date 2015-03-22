@@ -1,73 +1,21 @@
 <?php wp_enqueue_style('kwmmb-admin', KwmmbAssetic::get('stylesheet', 'admin')) ?>
 <?php wp_enqueue_script('ymaps','http://api-maps.yandex.ru/2.1/?lang=ru_RU'); ?>
 <?php wp_enqueue_script('kwmmb-admin', KwmmbAssetic::get('script', 'admin2'), array('jquery', 'ymaps', 'backbone')) ?>
+
+<script>
+  var rooms_prefill = <?= json_encode(KwmmbDb::select("kwmmb_rooms")) ?>;
+</script>
 <div class="wrap">
-    <h2>Настройки формы бронирования</h2>
-    <div class='col-50 tab' id='settings-other' style="display: none">
 
-    </div>
-    <div class="tab" id='settings-places'>
-        <div class='col-50'>
-          <a href='#settings'>Другие настройки</a>
-          <form class='kwmmb-item-form' name='kwmmb-item-form'>
-            <h3>Текущий элемент</h3>
-              <input id="kwmmb_ajax_nonce" type='hidden' name="_ajax_nonce" value='<?= wp_create_nonce('kwmmb_admin_nonce') ?>'>
-              <div class='kwmmb-field'>
-                <label for="item_name">Название:</label>
-                <input type='text' name='item_name' id="item_name" placeholder="База Хрустальная">
-                <span class='kwmmb-field-value'></span>
-              </div>
-              <div class='kwmmb-field'>
-                <label for="item_description">Описание:</label>
-                <input type='text' name='item_description' id="item_description" placeholder="">
-                <span class='kwmmb-field-value'></span>
-              </div>
-              <div class='kwmmb-field'>
-                <label for="item_tents_count">Кол-во палаток:</label>
-                <input type='number' name='item_tents_count' id="item_tents_count" placeholder="650">
-                <span class='kwmmb-field-value'></span>
-              </div>
-              <div class='kwmmb-field'>
-                <label for="item_standards_count">Кол-во стандартов:</label>
-                <input type='number' name='item_standards_count' id="item_standards_count" placeholder="650">
-                <span class='kwmmb-field-value'></span>
-              </div>
-              <div class='kwmmb-field'>
-                <label for="item_comforts_count">Кол-во комфортов:</label>
-                <input type='number' name='item_comforts_count' id="item_comforts_count" placeholder="650">
-                <span class='kwmmb-field-value'></span>
-              </div>
-              <div class='kwmmb-field'>
-                <label for="item_ecolux_count">Кол-во эко-люксов:</label>
-                <input type='number' name='item_ecolux_count' id="item_ecolux_count" placeholder="650">
-                <span class='kwmmb-field-value'></span>
-              </div>
-              <div class='kwmmb-field'>
-                <label for="item_points">Точки:</label>
-                <input type='text' name='item_points' id="item_points" placeholder="Щелкните для добавления на карту" readonly="readonly">
-                <span class='kwmmb-field-value'></span>
-              </div>
-          </form>
-          <button class='kwmmb-item-submit'>Сохранить</button>
-        </div>
-        <div class='col-50'>
-          <div class='kwmmb-admin-map' id='ya-map'></div>
-        </div>
-        <table class='kwmmb-admin-table'>
-          <tr class='table-header'><th>Наименование</th><th>Палатки</th><th>Стандарт</th><th>Комфорт</th><th>Эко-люкс</th><th>Действия</th></tr>
-
-        </table>
-    </div>
 </div>
 
-<script type="text/html" id="kwmmb_baloon">
-    <h3>{name}</h3>
-    <p>{description}</p>
+<script type="text/html" id="template-map-object">
+    <h3><%= m.get('name') %></h3>
+    <p><%= m.get('description') %></p>
     <ul>
-      <li>Палатки:  <b>{tents_count}</b> мест</li>
-      <li>Стандарт: <b>{standards_count}</b> мест</li>
-      <li>Комфорт:  <b>{comforts_count}</b> мест</li>
-      <li>Эко-люкс: <b>{ecolux_count}</b> мест</li>
+      <% KwmmbAdmin.rooms.byItemId(m.get('id')).each(function (room) { %>
+      <li><%= room.get('name') %>: <strong><%= room.get('count') %></strong></li>
+      <% }); %>
     </ul>
 </script>
 
@@ -85,19 +33,50 @@
   </tr>
 </script>
 
-<script type="text/html" id="kwmmb_loading">
-  <div class="kwmmb-loading-backdrop">
+<script type="text/html" id="template-loading">
+  <li class="kwmmb-loading">
     <img src="<?= KwmmbAssetic::get('animation', 'loading') ?>" alt="Загрузка...">
-  </div>
+  </li>
+</script>
+
+<!-- Room Template -->
+<script type='text/html' id="template-room">
+  <td><%= m.get('name') %></td>
+  <td><%= m.get('count') %></td>
+  <td><%= m.get('price') %></td>
+  <td><a class="delete" style="cursor: pointer">Удалить</a></td>
+</script>
+
+<!-- RoomCollection Template -->
+<script type='text/html' id="template-rooms">
+  <% if (m.get('id')) { %>
+  <tr class="table-header"><th>Название</th><th>Кол-во</th><th>Цена</th><th>Действия</th></tr>
+  <tr class="room-new">
+    <td><input type="text" id="room_name" /></td>
+    <td><input type="number" id="room_count" /></td>
+    <td><input type="number" id="room_price" /></td>
+    <td><button class="create">Добавить</button></td>
+  </tr>
+  <% } else { %>
+  <tr><td>Для добавления номеров сохраните базу.</td></tr>
+  <% } %>
 </script>
 
 <!-- BookingItem template -->
 <script type="text/html" id="template-booking-item">
-  <table>
-    <tr><td>Название: </td><td><input type="text" id="name" value="<%= m.get('name') %>"/></td></tr>
-    <tr><td>Описание: </td><td><input type="text" id="description" value="<%= m.get('description') %>"/></td></tr>
-  </table>
-  <button class="save">Сохранить</button>
+  <div class="col-50">
+    <table class='booking-item'>
+      <tr><td>Название: </td><td><input type="text" id="name" value="<%= m.get('name') %>"/></td></tr>
+      <tr><td>Описание: </td><td><input type="text" id="description" value="<%= m.get('description') %>"/></td></tr>
+      <tr><td>Вершины:  </td><td><input type="text" id="points" value="<%= m.get('points') %>" readonly="readonly"/></td></tr>
+    </table>
+    <h3>Номера:</h3>
+    <table id="rooms" class="kwmmb-admin-table"></table>
+  </div>
+  <div class="col-50">
+    <div class='kwmmb-admin-map' id='ya-map'></div>
+  </div>
+  <button class="save">Сохранить</button> <a href="#booking_items">Назад</a>
 </script>
 
 <!-- BookingItems template -->

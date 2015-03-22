@@ -34,7 +34,7 @@ var refresh_table = function (from_server) {
 function init() {
   myMap = new ymaps.Map("ya-map", {
             center: [44.808763, 37.370311],
-            zoom: 10
+            zoom: 12
   });
   
   refresh_map();

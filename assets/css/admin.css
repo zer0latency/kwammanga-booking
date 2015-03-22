@@ -52,6 +52,11 @@ and open the template in the editor.
 
 .kwmmb-admin-table {
   width: 100%;
+  max-width: 100%;
+}
+
+.kwmmb-admin-table input {
+  width: 100%;
 }
 
 .kwmmb-admin-table th {
