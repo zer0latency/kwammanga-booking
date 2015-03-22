@@ -160,7 +160,7 @@ class KwmmbRest {
       $subject = 'Kwammanga.ru - ваш заказ принят.';
       $model = KwmmbDb::select("kwmmb_bookings", array( "id" => $booking_id));
       $body = KwmmbAssetic::render("assets/views/email.html", array('model' => $model));
-      $headers = array('Content-Type: text/html; charset=UTF-8', 'From: Kwammanga.ru <admin@localhost>');
+      $headers = array('Content-Type: text/html; charset=UTF-8', 'From: Kwammanga.ru <'.get_bloginfo ( 'admin_email' ).'>');
 
       wp_mail( $to, $subject, $body, $headers );
     }
