@@ -121,7 +121,7 @@ var KwmmbApp = (function ($, _, Backbone, ymaps) {
     },
     saveCode: function () {
       this.model.save({
-        success: function () { console.log("Success!!!"); }
+        success: function () { self.bookingView.render(); }
       });
     }
   });

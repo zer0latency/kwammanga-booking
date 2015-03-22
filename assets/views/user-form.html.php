@@ -103,8 +103,9 @@
 </script>
 
 <script type="text/html" id="template-code">
+  <p><i>Код подтверждения будет выслан в течение 5 минут.</i></p>
   <div class="kwmmb-field">
-    <label for="code">Телефон:</label>
+    <label for="code">Код:</label>
     <input value="<%= m.get('code') %>" type="text" name="code" id="code" placeholder="Код подтверждения" required="required">
   </div>
   <button class="accept">Подтвердить</button>

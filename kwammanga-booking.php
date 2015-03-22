@@ -5,7 +5,7 @@ Plugin Name: Kwammanga Booking
 Plugin URI: https://github.com/zer0latency/kwammanga-booking
 Description: Under active development.
 Author: Daniil Kolesnik
-Version: 0.4
+Version: 0.5
 Author URI: https://github.com/zer0latency
 GitHub Plugin URI: zer0latency/kwammanga-booking
 GitHub Branch:     master
