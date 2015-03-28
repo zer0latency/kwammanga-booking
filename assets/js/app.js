@@ -81,8 +81,8 @@ var KwmmbApp = (function ($, _, Backbone, ymaps) {
       "child_0_5":  0,
       "child_6_12": 0,
       "food":       0,
-      "date_start": new Date('2015-07-06'),
-      "date_end": new Date('2015-07-13'),
+      "date_start": new Date('2015-06-06'),
+      "date_end": new Date('2015-06-13'),
       "verified": 0,
       "item": null,
       "comment": ""

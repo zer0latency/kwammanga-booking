@@ -19,7 +19,7 @@ var KwmmbAdmin = (function ($, ymaps, _, Backbone) {
       "settings":          "settings"
     },
     bookings:           function ()       { self.currentView.undelegateEvents(); self.currentView = new self.BookingsView(); },
-    bookings_show:      function (str_id) { self.currentView.undelegateEvents(); self.currentView = new self.BookingView({model: new self.Booking({id: str_id})}); },
+    bookings_show:      function (str_id) { self.currentView.undelegateEvents(); self.currentView = new self.BookingView({model: new self.Booking({str_id: str_id})}); },
     booking_items:      function ()       { self.currentView.undelegateEvents(); self.currentView = new self.BookingItemsView(); },
     booking_items_new:  function ()       { self.currentView.undelegateEvents(); self.currentView = new self.BookingItemView({ model: new self.BookingItem() }); },
     booking_items_edit: function (id)     { self.currentView.undelegateEvents(); self.currentView = new self.BookingItemView({ model: new self.BookingItem({id: id}) }); },
@@ -31,12 +31,34 @@ var KwmmbAdmin = (function ($, ymaps, _, Backbone) {
    */
   this.Booking = Backbone.Model.extend({
     url: function () {
-      console.log(id, this);
       var id = this.get('str_id')!=="" ? this.get('str_id') : this.get('id');
       return "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=bookings/" + id;
     },
     showUrl: function () {
       return "#bookings/" + this.get('str_id');
+    },
+    getRoom: function () {
+      return self.rooms.get(this.get('item'));
+    },
+    costs: function () {
+      var m = this.model;
+      var days = (moment(m.get('date_end'))-moment(m.get('date_start')))/(1000 * 3600 * 24)+1;
+      var peoples = parseInt(m.get('adults')) + parseInt(m.get('child_6_12')) + parseInt(m.get('child_0_5'))*0.5;
+
+      return {
+        org: price_org*parseInt(m.get('adults')),
+        live: days > 6
+                    ? m.get('item').get('price_full')*peoples
+                    : m.get('item').get('price')*days*peoples,
+        food:  days > 6
+                    ? 4200*parseInt(m.get('food'))
+                    : 600*days*parseInt(m.get('food'))
+      };
+    },
+    setPayed: function () {
+      console.log(this.get('payed'), parseInt(this.get('payed')) ? 0 : 1);
+      this.set('payed', parseInt(this.get('payed')) ? 0 : 1);
+      this.save();
     }
   });
 
@@ -70,7 +92,11 @@ var KwmmbAdmin = (function ($, ymaps, _, Backbone) {
    * Room Model
    */
   this.Room = Backbone.Model.extend({
-    urlRoot: "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=rooms"
+    urlRoot: "/wp-admin/admin-ajax.php?action=kwmmb_rest&route=rooms",
+    getItem: function (callback) {
+      this.item = new BookingItem({id: this.get('item_id') });
+      this.item.fetch({ success: callback });
+    }
   });
 
   /**
@@ -292,11 +318,26 @@ var KwmmbAdmin = (function ($, ymaps, _, Backbone) {
     template: _.template($('#template-booking').html()),
     initialize: function () {
       var self   = this;
-      this.model.fetch({ success: function () { self.render(); }});
+      this.model.on("sync", function () {
+        self.render();
+      });
+      this.model.fetch();
     },
     render: function () {
-      $(this.el).hide().html(this.template({ booking: this.model })).fadeIn();
+      var self = this;
+      if (!this.room) {
+        this.room = this.model.getRoom();
+        this.room.getItem(function () { self.render(); });
+        return;
+      }
+      console.log(this.model);
+      $(this.el).hide().html(this.template({ booking: this.model, room: this.room })).fadeIn();
       return this;
+    },
+    events: {
+      "click .setPayed": function () {
+        this.model.setPayed();
+      }
     }
   });
 

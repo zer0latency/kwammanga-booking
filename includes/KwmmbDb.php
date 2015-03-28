@@ -7,7 +7,7 @@ class KwmmbDb
 {
     //--------------------------------------------------------------------------
     //                             Properties
-    public static $version = 0;
+    public static $version = 1;
     public static $tables  = array(
         'kwmmb_booking_items',
         'kwmmb_rooms',
@@ -243,9 +243,13 @@ class KwmmbDb
 
         for ($i = $current_version+1; $i <= $version; $i++) {
             kwmmb_log("Executing $i query for $table");
-            $sql = self::get_sql($table, $i, array('prefix' => $wpdb->prefix));
-            if ($wpdb->query( $sql )) {
-                $wpdb->query("alter table `$prefixed_table_name` comment 'Version: $i'");
+            try {
+              $sql = self::get_sql($table, $i, array('prefix' => $wpdb->prefix));
+              if ($wpdb->query( $sql )) {
+                  $wpdb->query("alter table `$prefixed_table_name` comment 'Version: $i'");
+              }
+            } catch (Exception $e) {
+              kwmmb_log($e->getMessage());
             }
         }
     }

@@ -1,9 +1,14 @@
 <?php wp_enqueue_style('kwmmb-admin', KwmmbAssetic::get('stylesheet', 'admin')) ?>
 <?php wp_enqueue_script('ymaps','http://api-maps.yandex.ru/2.1/?lang=ru_RU'); ?>
-<?php wp_enqueue_script('kwmmb-admin', KwmmbAssetic::get('script', 'admin2'), array('jquery', 'ymaps', 'backbone'), '', true) ?>
+<?php wp_enqueue_script('moment',                  KwmmbAssetic::get('script', 'moment.min')) ?>
+<?php wp_enqueue_script('kwmmb-admin', KwmmbAssetic::get('script', 'admin2'), array('jquery', 'ymaps', 'backbone', 'moment'), '', true) ?>
 
 <script>
-  var rooms_prefill = <?= json_encode(KwmmbDb::select("kwmmb_rooms")) ?>;
+    // Bootstrap some models
+    var rooms_prefill = <?= json_encode(KwmmbDb::select("kwmmb_rooms")) ?>;
+    var items_prefill = <?= json_encode(KwmmbDb::select("kwmmb_booking_items")) ?>;
+    // Inject options
+    var price_org    = <?= get_option('price_org', 2500); ?>;
 </script>
 <div class="wrap">
 
@@ -142,7 +147,8 @@
       <li>Детей: <strong><%= booking.get('child_0_5') %></strong></li>
       <li>Подростков: <strong><%= booking.get('child_6_12') %></strong></li>
       <li>Подтвержден: <strong><%= booking.get('verified') === "0" ? "Нет" : "Да" %></strong></li>
-      <li>Место: <strong><%= "" %></strong></li>
+      <li>Оплачен: <strong><%= parseInt(booking.get('payed')) ? "Да"  : "Нет"  %></strong> <a class="setPayed">Изменить статус</a></li>
+      <li>Место: <strong><a href="#booking_items/<%= room.item.get('id') %>"><%= room.item.get('name') %> - <%= room.get('name') %></a></strong></li>
   </ul>
 </script>
 

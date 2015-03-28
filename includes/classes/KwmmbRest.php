@@ -125,6 +125,7 @@ class KwmmbRest {
     public static function getBooking($str_id) {
       if (isset($_POST['_method'])) {
         $model = json_decode( str_replace('\"','"',$_POST['model']), true );
+        KwmmbRest::sendMail($model['id']);
         wp_send_json(KwmmbDb::save('kwmmb_bookings', $model, array('str_id' => $str_id)));
       }
       wp_send_json(KwmmbDb::select('kwmmb_bookings', array('str_id' => $str_id)));
@@ -159,9 +160,35 @@ class KwmmbRest {
       $to = 'dandydan2k@gmail.com';
       $subject = 'Kwammanga.ru - ваш заказ принят.';
       $model = KwmmbDb::select("kwmmb_bookings", array( "id" => $booking_id));
-      $body = KwmmbAssetic::render("assets/views/email.html", array('model' => $model));
+      $room  = KwmmbDb::select("kwmmb_rooms", array("id" => $model->item));
       $headers = array('Content-Type: text/html; charset=UTF-8', 'From: Kwammanga.ru <'.get_bloginfo ( 'admin_email' ).'>');
 
+      $my_posts = get_posts( array(
+        'category_name'    => 'реквизиты',
+        'suppress_filters' => true
+      ) );
+      if( $my_posts ) {
+        $content = $my_posts[0]->post_content;
+      }
+      $days = floor((strtotime($model->date_end) - strtotime($model->date_start))/(60*60*24));
+      $peoples = $model->adults + $model->child_6_12 + $model->child_0_5*0.5;
+      kwmmb_log("Days: $days...".$model->date_end);
+      if ($days > 6) {
+        $room_price = $room->price_full;
+        $food_price = 4200;
+      } else {
+        $room_price = $days * $room->price;
+        $food_price = $days * 600;
+      }
+
+      $costs = array(
+        'org'    => $model->adults*get_option('price_org', 2500),
+        'living' => $peoples * $room_price,
+        'food'   => $model->food * $food_price
+      );
+
+      $body = KwmmbAssetic::render("assets/views/email.html", array('model' => $model, 'content' => $content, 'costs' => $costs));
+      kwmmb_log($body);
       wp_mail( $to, $subject, $body, $headers );
     }
 }
