@@ -41,7 +41,11 @@
         <div id="ya-map"></div>
         <div class="kwmmb-field">
           <label for="place">Выбранное место:</label>
-          <input value="<%= currentItem.get('name') %>" type="text" readonly="readonly" name="place" id="place" placeholder="Выберите место на карте">
+          <select id="place" name="place">
+            <% items.each(function (el) { %>
+            <option data-id="<%= el.get('id') %>" <% if (el.get('id')===currentItem.get('id')) { %>selected="selected"<% } %>><%= el.get('name') %></option>
+            <% }); %>
+          </select>
         </div>
         <p><b>Тип размещения:</b></p>
         <div class="kwmmb-field">

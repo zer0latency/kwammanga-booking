@@ -145,7 +145,7 @@ var KwmmbApp = (function ($, _, Backbone, ymaps) {
     render: function () {
       var item = this.model.get('item');
       if (parseInt(item)) { this.model.set({ item: this.rooms.get(item) }); return; }
-      jQuery(this.el).html(this.template({ m: this.model, costs: this.costs(), currentItem: this.currentItem}));
+      jQuery(this.el).html(this.template({ m: this.model, costs: this.costs(), currentItem: this.currentItem, items: this.items}));
       this.renderMap();
       if (!this.model.get('id')) {
         return this;
@@ -174,6 +174,7 @@ var KwmmbApp = (function ($, _, Backbone, ymaps) {
 
     events: {
       "change form input": "change",
+      "click select option": "selectItem",
       "click .kwmmb-item-submit": "saveBooking",
       "click .kwmmb-places-table a": "changeComfort",
       "click .select-item": "selectItem"
