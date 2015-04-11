@@ -5,7 +5,7 @@ Plugin Name: Kwammanga Booking
 Plugin URI: https://github.com/zer0latency/kwammanga-booking
 Description: Система бронирования номеров. Страница с формой должна иметь название kwmmb-booking. Реквизиты должны находиться в рубрике "реквизиты".
 Author: Daniil Kolesnik
-Version: 1.0.0
+Version: 1.0.2
 Author URI: https://github.com/zer0latency
 GitHub Plugin URI: zer0latency/kwammanga-booking
 GitHub Branch:     master
