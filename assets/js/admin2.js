@@ -120,7 +120,11 @@ var KwmmbAdmin = (function ($, ymaps, _, Backbone) {
     render: function () {
       $(this.el).html(this.template({ m: this.model }));
     },
-    events: { "click .delete": "deleteRoom" },
+    events: {
+      "click .delete": "deleteRoom",
+      "dblclick td": "editField",
+      "change input": "saveField"
+    },
     deleteRoom: function () {
       var view = this;
       this.model.destroy({
@@ -128,6 +132,17 @@ var KwmmbAdmin = (function ($, ymaps, _, Backbone) {
           view.remove();
         }
       });
+    },
+    editField: function (e) {
+      var element = $(e.target);
+      element.html('<input type="text" name="' + element.attr('id') + '" value="' + element.html() +'">');
+    },
+    saveField: function (e) {
+      var element = $(e.target);
+      this.model.set(element.attr('name'), element.attr('value'));
+      this.model.save();
+      element.parent().html(this.model.get(element.attr('name')));
+      console.log(element);
     }
   });
 
@@ -157,6 +172,7 @@ var KwmmbAdmin = (function ($, ymaps, _, Backbone) {
         count: this.$("#room_count").val(),
         price: this.$('#room_price').val(),
         price_full: this.$('#room_price_full').val(),
+        description: this.$('#room_description').val(),
         item_id: this.model.get('id')
       });
       room.save({},{
@@ -218,8 +234,8 @@ var KwmmbAdmin = (function ($, ymaps, _, Backbone) {
       var view = this;
       ymaps.ready(function () {
         view.map = new ymaps.Map("ya-map", {
-          center: [44.808763, 37.370311],
-          zoom: 10
+          center: JSON.parse(view.model.get('points')).pop(),
+          zoom: 13
         });
         view.fillMap();
         new self.RoomCollectionView({ collection: self.rooms, model: view.model });

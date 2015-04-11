@@ -46,22 +46,32 @@
 
 <!-- Room Template -->
 <script type='text/html' id="template-room">
-  <td><%= m.get('name') %></td>
-  <td><%= m.get('count') %></td>
-  <td><%= m.get('price') %></td>
-  <td><%= m.get('price_full') %></td>
+  <td id="name"><%= m.get('name') %></td>
+  <td id="count"><%= m.get('count') %></td>
+  <td id="price"><%= m.get('price') %></td>
+  <td id="price_full"><%= m.get('price_full') %></td>
+  <td id="description"><%= m.get('description') %></td>
   <td><a class="delete" style="cursor: pointer">Удалить</a></td>
 </script>
 
 <!-- RoomCollection Template -->
 <script type='text/html' id="template-rooms">
   <% if (m.get('id')) { %>
-  <tr class="table-header"><th>Название</th><th>Кол-во</th><th>Цена</th><th>Ц. за 7 дней</th><th>Действия</th></tr>
+  <colgroup>
+     <col span="1" style="width: 20%;">
+     <col span="1" style="width: 10%;">
+     <col span="1" style="width: 10%;">
+     <col span="1" style="width: 10%;">
+     <col span="1" style="width: 40%;">
+     <col span="1" style="width: 10%;">
+  </colgroup>
+  <tr class="table-header"><th>Название</th><th>Кол-во</th><th>Цена</th><th>Ц. за 7 дней</th><th>Описание</th><th>Действия</th></tr>
   <tr class="room-new">
     <td><input type="text" id="room_name" /></td>
     <td><input type="number" id="room_count" /></td>
     <td><input type="number" id="room_price" /></td>
     <td><input type="number" id="room_price_full" /></td>
+    <td><input type="text" id="room_description" /></td>
     <td><button class="create">Добавить</button></td>
   </tr>
   <% } else { %>
@@ -77,12 +87,12 @@
       <tr><td>Описание: </td><td><input type="text" id="description" value="<%= m.get('description') %>"/></td></tr>
       <tr><td>Вершины:  </td><td><input type="text" id="points" value="<%= m.get('points') %>" readonly="readonly"/></td></tr>
     </table>
-    <h3>Номера:</h3>
-    <table id="rooms" class="kwmmb-admin-table"></table>
   </div>
   <div class="col-50">
     <div class='kwmmb-admin-map' id='ya-map'></div>
   </div>
+    <h3>Номера:</h3>
+    <table id="rooms" class="kwmmb-admin-table"></table>
   <button class="save">Сохранить</button> <a href="#booking_items">Назад</a>
 </script>
 

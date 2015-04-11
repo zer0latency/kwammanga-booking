@@ -10,8 +10,8 @@ var KwmmbApp = (function ($, _, Backbone, ymaps) {
       separator: ' - ',
       language: 'ru',
       startOfWeek: 'monday',
-      startDate: new Date('2015-07-06'),
-      endDate: new Date('2015-07-13'),
+      startDate: new Date('2015-06-06'),
+      endDate: new Date('2015-06-13'),
       minDays: 1,
       maxDays: 8,
       showShortcuts: false,
@@ -176,18 +176,13 @@ var KwmmbApp = (function ($, _, Backbone, ymaps) {
       "change form input": "change",
       "click select option": "selectItem",
       "click .kwmmb-item-submit": "saveBooking",
-      "click .kwmmb-places-table a": "changeComfort",
       "click .select-item": "selectItem"
     },
 
     change: function (event) {
       var target = event.target;
-      this.model.set(target.id, target.value);
-    },
-
-    changeComfort: function (event) {
-      var comfort = jQuery(event.target).attr('data-id');
-      this.model.set('comfort', comfort);
+      console.log(target.name, target.value);
+      this.model.set(target.name, target.value);
     },
 
     selectItem: function (e) {

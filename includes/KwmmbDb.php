@@ -7,7 +7,7 @@ class KwmmbDb
 {
     //--------------------------------------------------------------------------
     //                             Properties
-    public static $version = 1;
+    public static $version = 2;
     public static $tables  = array(
         'kwmmb_booking_items',
         'kwmmb_rooms',

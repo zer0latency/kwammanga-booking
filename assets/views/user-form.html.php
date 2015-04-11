@@ -48,11 +48,12 @@
           </select>
         </div>
         <p><b>Тип размещения:</b></p>
-        <div class="kwmmb-field">
-          <% KwmmbApp.rooms.byItemId(currentItem.get('id')).each(function (room) { %>
-          <label for="item"><%= room.get('name') %></label>
-          <input <% if (room.get('id') === m.get('item').get('id')) { %>checked<% } %> type="radio" name="item" id="item" value="<%= room.get('id') %>">
-          <% }); %>
+        <div class="kwmmb-radio-group">
+        <% KwmmbApp.rooms.byItemId(currentItem.get('id')).each(function (room) { %>
+          <input <% if (room.get('id') === m.get('item').get('id')) { %>checked<% } %> type="radio" name="item" id="item<%= room.get('id') %>" value="<%= room.get('id') %>">
+          <label for="item<%= room.get('id') %>"><%= room.get('name') %></label>
+          <small><%= room.get('description') %></small>
+        <% }); %>
         </div>
         <hr>
         <p><b>Нас:</b></p>
