@@ -95,6 +95,20 @@ var KwmmbApp = (function ($, _, Backbone, ymaps) {
     },
     isVerified: function () {
       return this.get('verified') === "1";
+    },
+    validate: function (attrs, options) {
+      if (!attrs.name) {
+        return { field: "name", error: "Заполните, пожалуйста, это поле" };
+      }
+      if (!attrs.email || !attrs.email.match(/.+@.+\..+/)) {
+        return { field: "email", error: "Укажите корректный EMail" };
+      }
+      if (!attrs.phone || !attrs.phone.match(/[0-9]{11}/)) {
+        return { field: "phone", error: "Укажите корректный номер телефона" };
+      }
+      if (!(parseInt(attrs.adults) > 0)) {
+        return { field: "adults", error: "Должен быть как минимум один взрослый" };
+      }
     }
   });
 
@@ -139,6 +153,7 @@ var KwmmbApp = (function ($, _, Backbone, ymaps) {
       if (parseInt(item)) { this.model.set({ item: this.rooms.get(item) }); }
       this.currentItem = this.items.get(this.model.get('item').get('item_id'));
       this.model.bind("change", this.render, this);
+      this.model.bind('invalid', this.invalid, this);
       this.render();
     },
 
@@ -155,6 +170,13 @@ var KwmmbApp = (function ($, _, Backbone, ymaps) {
         this.codeView = new CodeView({ model: this.code });
       }
       return this;
+    },
+
+    invalid: function (e) {
+      var err = e.validationError;
+      var $el = $(this.el);
+      $el.find("#"+err.field).css("borderColor", "#ff9999").after("<small class=\"error-msg\">"+err.error+"</small>");
+      console.log(e);
     },
 
     renderMap: function () {

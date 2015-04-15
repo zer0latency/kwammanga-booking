@@ -11,6 +11,11 @@ and open the template in the editor.
   cursor: pointer;
 }
 
+.error-msg {
+  display: inline-block;
+  color: #ff7777;
+}
+
 .text-center {
   display: inline-block;
   text-align: center;
