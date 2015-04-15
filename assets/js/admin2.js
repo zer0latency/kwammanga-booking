@@ -234,7 +234,7 @@ var KwmmbAdmin = (function ($, ymaps, _, Backbone) {
       var view = this;
       ymaps.ready(function () {
         view.map = new ymaps.Map("ya-map", {
-          center: JSON.parse(view.model.get('points')).pop(),
+          center: view.model.get('points') ? JSON.parse(view.model.get('points')).pop() : [45.009866, 37.198787],
           zoom: 13
         });
         view.fillMap();
